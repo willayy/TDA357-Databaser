@@ -150,7 +150,7 @@ CREATE VIEW StudentMandatoryCourses AS (
 );
 
 -- Subview of all students that have mandatory courses that they have not passed
-CREATE VIEW UncompletedMandatoryCourses AS (
+CREATE VIEW UncompleteMandatoryCourses AS (
 	SELECT StudentsMandatoryCourses.idnr, StudentsMandatoryCourses.course
 	FROM StudentsMandatoryCourses
 	EXCEPT
@@ -160,9 +160,9 @@ CREATE VIEW UncompletedMandatoryCourses AS (
 
 -- Subview of the amount of uncompleted mandatory courses for each all students
 CREATE VIEW CountedUncompleteMandatoryCourses AS (
-	SELECT UncompletedMandatoryCourses.idnr, COUNT(UncompletedMandatoryCourses.course) 
-	FROM UncompletedMandatoryCourses
-	GROUP BY UncompletedMandatoryCourses.idnr
+	SELECT UncompleteMandatoryCourses.idnr, COUNT(UncompleteMandatoryCourses.course) 
+	FROM UncompleteMandatoryCourses
+	GROUP BY UncompleteMandatoryCourses.idnr
 
 	UNION -- Add all students
 
@@ -172,6 +172,6 @@ CREATE VIEW CountedUncompleteMandatoryCourses AS (
 	EXCEPT -- Remove the intersection, the students that are also in uncompleted courses
 
 	SELECT Students.idnr, '0'
-	FROM Students, UncompletedMandatoryCourses
-	WHERE Students.idnr = UncompletedMandatoryCourses.idnr
+	FROM Students, UncompleteMandatoryCourses
+	WHERE Students.idnr = UncompleteMandatoryCourses.idnr
 );
