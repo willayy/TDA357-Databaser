@@ -101,18 +101,20 @@ CREATE VIEW BasicInformation AS (
 	ON (s.idnr = sb.student)
 );
 
+-- Students that have done a course and recieved a grade
 CREATE VIEW FinishedCourses AS (
 	SELECT Taken.student, Taken.course, Taken.grade, Courses.name, Courses.credits
 	FROM Taken, Courses WHERE (Taken.course = Courses.code)
 );
 
+-- Students that are registered or waiting for a course
 CREATE VIEW Registrations AS (
 	SELECT Registered.student, Registered.course, 'registered' AS status FROM Registered
 	UNION
 	SELECT WaitingList.student, WaitingList.course, 'waiting' AS status FROM WaitingList
 );
 
--- Subview of students passed courses
+-- Subview of students passed courses, i.e. courses with a grade other than U
 CREATE VIEW StudentPassedCourses AS (	
 	SELECT Students.idnr, Taken.course
 	FROM Students 
