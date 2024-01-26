@@ -176,9 +176,9 @@ CREATE VIEW CountedUncompleteMandatoryCourses AS (
 	WHERE Students.idnr = UncompleteMandatoryCourses.idnr
 );
 
-create View seminarCourses as(
-select studentpassedcourses.idnr, count(classified.course)
-from studentpassedcourses, classified
-where studentpassedcourses.course = classified.course and classified.classification = 'seminar'
-group by studentpassedcourses.idnr
+create View seminarCourses as (
+	select studentpassedcourses.idnr, count(classified.course)
+	from studentpassedcourses, classified
+	where studentpassedcourses.course = classified.course and classified.classification = 'seminar'
+	group by studentpassedcourses.idnr
 );
