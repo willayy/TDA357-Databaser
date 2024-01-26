@@ -160,20 +160,11 @@ CREATE VIEW UncompleteMandatoryCourses AS (
 
 -- Subview of the amount of uncompleted mandatory courses for each all students
 CREATE VIEW CountedUncompleteMandatoryCourses AS (
-	SELECT UncompleteMandatoryCourses.idnr, COUNT(UncompleteMandatoryCourses.course) 
-	FROM UncompleteMandatoryCourses
-	GROUP BY UncompleteMandatoryCourses.idnr
-
-	UNION -- Add all students
-
-	SELECT Students.idnr, '0' 
+	SELECT Students.idnr, COALESCE(COUNT(UncompleteMandatoryCourses.course),0) AS mandatoryLeft
 	FROM Students
-
-	EXCEPT -- Remove the intersection, the students that are also in uncompleted courses
-
-	SELECT Students.idnr, '0'
-	FROM Students, UncompleteMandatoryCourses
-	WHERE Students.idnr = UncompleteMandatoryCourses.idnr
+	LEFT JOIN UncompleteMandatoryCourses
+	ON (Students.idnr = UncompleteMandatoryCourses.idnr)
+	GROUP BY Students.idnr
 );
 
 create View seminarCourses as (
@@ -181,4 +172,24 @@ create View seminarCourses as (
 	from studentpassedcourses, classified
 	where studentpassedcourses.course = classified.course and classified.classification = 'seminar'
 	group by studentpassedcourses.idnr
+);
+
+-- Subview of all students that have passed a math course
+CREATE VIEW PassedMathCourses AS (
+	SELECT DISTINCT Students.idnr, COALESCE(StudentPassedCourses.course, NULL) AS passedMathCourse
+	FROM Students, StudentPassedCourses, Classified
+	WHERE (Students.idnr = StudentPassedCourses.idnr)
+	AND (StudentPassedCourses.course = Classified.course)
+	AND (Classified.classification = 'math')
+);
+
+-- All students sums of math credits
+CREATE VIEW StudentMathCredits AS (
+	SELECT Students.idnr, COALESCE(SUM(Courses.credits),0) AS mathCredits
+	FROM Students
+	LEFT JOIN PassedMathCourses
+	ON (Students.idnr = PassedMathCourses.idnr)
+	LEFT JOIN Courses
+	ON (PassedMathCourses.passedMathCourse = Courses.code)
+	GROUP BY Students.idnr
 );
