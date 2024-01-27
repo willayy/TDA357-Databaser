@@ -159,7 +159,7 @@ CREATE VIEW UncompleteMandatoryCourses AS (
 );
 
 -- Subview of the amount of uncompleted mandatory courses for each all students
-CREATE VIEW CountedUncompleteMandatoryCourses AS (
+CREATE VIEW NrOfUncompleteMandatoryCourses AS (
 	SELECT Students.idnr, COALESCE(COUNT(UncompleteMandatoryCourses.course),0) AS mandatoryLeft
 	FROM Students
 	LEFT JOIN UncompleteMandatoryCourses
@@ -168,16 +168,16 @@ CREATE VIEW CountedUncompleteMandatoryCourses AS (
 );
 
 -- Subview of all students that have passed a seminar course
-CREATE view passedseminarcourses AS(
+CREATE view PassedSeminarCourses AS (
 SELECT students.idnr, studentpassedcourses.course
 	FROM students,studentpassedcourses, classified
 	WHERE (Students.idnr = StudentPassedCourses.idnr)
 	AND (StudentPassedCourses.course = Classified.course)
 	AND (Classified.classification = 'seminar')
-)
+);
 
 -- All students number of seminar courses passed
-Create View nrofseminarcoursespassed AS(
+Create View NrOfSeminarCoursesPassed AS (
 SELECT Students.idnr, COALESCE(count(courses.code),0) AS numberofpassedseminarcourses
 	FROM Students
 	LEFT JOIN Passedseminarcourses
