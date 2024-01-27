@@ -167,11 +167,24 @@ CREATE VIEW CountedUncompleteMandatoryCourses AS (
 	GROUP BY Students.idnr
 );
 
-create View seminarCourses as (
-	select studentpassedcourses.idnr, count(classified.course)
-	from studentpassedcourses, classified
-	where studentpassedcourses.course = classified.course and classified.classification = 'seminar'
-	group by studentpassedcourses.idnr
+-- Subview of all students that have passed a seminar course
+CREATE view passedseminarcourses AS(
+SELECT students.idnr, studentpassedcourses.course
+	FROM students,studentpassedcourses, classified
+	WHERE (Students.idnr = StudentPassedCourses.idnr)
+	AND (StudentPassedCourses.course = Classified.course)
+	AND (Classified.classification = 'seminar')
+)
+
+-- All students number of seminar courses passed
+Create View nrofseminarcoursespassed AS(
+SELECT Students.idnr, COALESCE(count(courses.code),0) AS numberofpassedseminarcourses
+	FROM Students
+	LEFT JOIN Passedseminarcourses
+	ON (Students.idnr = Passedseminarcourses.idnr)
+	LEFT JOIN Courses
+	ON (Passedseminarcourses.course = Courses.code)
+	GROUP BY Students.idnr
 );
 
 -- Subview of all students that have passed a math course
@@ -193,3 +206,4 @@ CREATE VIEW StudentMathCredits AS (
 	ON (PassedMathCourses.passedMathCourse = Courses.code)
 	GROUP BY Students.idnr
 );
+
