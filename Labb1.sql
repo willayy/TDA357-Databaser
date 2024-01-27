@@ -176,7 +176,7 @@ create View seminarCourses as (
 
 -- Subview of all students that have passed a math course
 CREATE VIEW PassedMathCourses AS (
-	SELECT DISTINCT Students.idnr, COALESCE(StudentPassedCourses.course, NULL) AS passedMathCourse
+	SELECT Students.idnr, COALESCE(StudentPassedCourses.course, NULL) AS passedMathCourse
 	FROM Students, StudentPassedCourses, Classified
 	WHERE (Students.idnr = StudentPassedCourses.idnr)
 	AND (StudentPassedCourses.course = Classified.course)
