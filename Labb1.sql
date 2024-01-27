@@ -207,3 +207,61 @@ CREATE VIEW StudentMathCredits AS (
 	GROUP BY Students.idnr
 );
 
+CREATE VIEW RecommendedCourseCredits AS (
+	SELECT Students.idnr, SUM(Courses.credits) AS recommendedCredits
+	FROM 
+	Students, 
+	StudentPassedCourses, 
+	StudentBranches,
+	RecommendedBranch,
+	Courses
+	WHERE
+	Students.idnr = StudentPassedCourses.idnr
+	AND Students.idnr = StudentBranches.student
+	AND Students.program = StudentBranches.program
+	AND StudentBranches.branch = RecommendedBranch.branch
+	AND Students.program = RecommendedBranch.program
+	AND StudentPassedCourses.course = RecommendedBranch.course
+	AND StudentPassedCOurses.course = Courses.code
+	GROUP BY Students.idnr
+);
+
+CREATE VIEW AllStudentsRecommendedCredits AS (
+	SELECT Students.idnr, COALESCE(RecommendedCourseCredits.recommendedcredits, 0)
+	FROM Students
+	LEFT JOIN RecommendedCourseCredits
+	ON (Students.idnr = RecommendedCourseCredits.idnr)
+);
+
+CREATE VIEW PathToGraduation AS (
+	SELECT
+	Students.idnr,
+	StudentTotalCredits.totalCredits,
+	NrOfUncompleteMandatoryCourses.mandatoryLeft,
+	StudentMathCredits.mathCredits,
+	NrOfSeminarCoursesPassed.numberOfPassedSeminarCourses,
+
+	CASE
+	WHEN NrOfUncompleteMandatoryCourses.mandatoryLeft = 0
+	AND StudentMathCredits.mathCredits >= 20
+	AND NrOfSeminarCoursesPassed.numberOfPassedSeminarCourses >= 1
+	AND AllStudentsRecommendedCredits.recommendedCredits >= 10
+	THEN TRUE
+	ELSE FALSE
+	END AS qualified
+
+	FROM 
+	Students,
+	StudentTotalCredits,
+	NrOfUncompleteMandatoryCourses,
+	StudentMathCredits,
+	NrOfSeminarCoursesPassed,
+	AllStudentsRecommendedCredits
+
+	WHERE
+	Students.idnr = StudentTotalCredits.idnr 
+	AND Students.idnr = NrOfUncompleteMandatoryCourses.idnr 
+	AND Students.idnr = StudentMathCredits.idnr 
+	AND Students.idnr = NrOfSeminarCoursesPassed.idnr
+	AND Students.idnr = AllStudentsRecommendedCredits.idnr
+);
