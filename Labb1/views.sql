@@ -8,7 +8,7 @@ CREATE VIEW BasicInformation AS (
 
 -- Students that have done a course and recieved a grade
 CREATE VIEW FinishedCourses AS (
-	SELECT Taken.student, Taken.course, Taken.grade, Courses.name, Courses.credits
+	SELECT Taken.student, Taken.course, Taken.grade, Courses.name AS courseName, Courses.credits
 	FROM Taken, Courses WHERE (Taken.course = Courses.code)
 );
 
@@ -140,11 +140,11 @@ CREATE VIEW AllStudentsRecommendedCredits AS (
 
 CREATE VIEW PathToGraduation AS (
 	SELECT
-	Students.idnr,
+	Students.idnr AS student,
 	StudentTotalCredits.totalCredits,
 	NrOfUncompleteMandatoryCourses.mandatoryLeft,
 	StudentMathCredits.mathCredits,
-	NrOfSeminarCoursesPassed.numberOfPassedSeminarCourses,
+	NrOfSeminarCoursesPassed.numberOfPassedSeminarCourses AS seminarCourses,
 
 	CASE
 	WHEN NrOfUncompleteMandatoryCourses.mandatoryLeft = 0
