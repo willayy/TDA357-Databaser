@@ -108,20 +108,13 @@ CREATE VIEW StudentMathCredits AS (
 
 CREATE VIEW RecommendedCourseCredits AS (
 	SELECT Students.idnr, SUM(Courses.credits) AS recommendedCredits
-	FROM 
-	Students, 
-	StudentPassedCourses, 
-	StudentBranches,
-	RecommendedBranch,
-	Courses
-	WHERE
-	Students.idnr = StudentPassedCourses.idnr
-	AND Students.idnr = StudentBranches.student
-	AND Students.program = StudentBranches.program
-	AND StudentBranches.branch = RecommendedBranch.branch
-	AND Students.program = RecommendedBranch.program
-	AND StudentPassedCourses.course = RecommendedBranch.course
-	AND StudentPassedCOurses.course = Courses.code
+	FROM Students
+	JOIN StudentPassedCourses ON (Students.idnr = StudentPassedCourses.idnr)
+	JOIN StudentBranches ON (Students.idnr = StudentBranches.student)
+	JOIN RecommendedBranch ON (StudentBranches.branch = RecommendedBranch.branch 
+	AND StudentBranches.program = RecommendedBranch.program)
+	JOIN Courses ON (StudentPassedCourses.course = Courses.code 
+	AND Courses.code = RecommendedBranch.course)
 	GROUP BY Students.idnr
 );
 
