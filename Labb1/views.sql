@@ -1,5 +1,3 @@
-
-
 CREATE VIEW BasicInformation AS (
 	SELECT s.idnr, s.name, s.login, s.program, sb.branch 
 	FROM Students AS s LEFT JOIN StudentBranches AS sb
@@ -39,19 +37,15 @@ CREATE VIEW StudentTotalCredits AS (
 
 -- Subview of all students that have obligatory courses
 CREATE VIEW StudentMandatoryCourses AS (	
-	SELECT Students.idnr, MandatoryBranch.course
-	FROM Students 
-	LEFT JOIN MandatoryBranch
-	ON (Students.program = MandatoryBranch.program)
-	WHERE MandatoryBranch.course IS NOT NULL
+	SELECT idnr, course
+	FROM Students
+	NATURAL JOIN MandatoryProgram
 	
 	UNION
 
-	SElECT Students.idnr, MandatoryProgram.course
-	FROM Students 
-	LEFT JOIN MandatoryProgram
-	ON (Students.program = MandatoryProgram.program)
-	WHERE MandatoryProgram.course IS NOT NULL
+	SElECT student, course
+	FROM StudentBranches
+	NATURAL JOIN MandatoryBranch
 );
 
 -- Subview of all students that have mandatory courses that they have not passed
