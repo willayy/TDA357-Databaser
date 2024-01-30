@@ -119,7 +119,7 @@ CREATE VIEW RecommendedCourseCredits AS (
 );
 
 CREATE VIEW AllStudentsRecommendedCredits AS (
-	SELECT Students.idnr, COALESCE(RecommendedCourseCredits.recommendedcredits, 0)AS recommendedCredits
+	SELECT Students.idnr, COALESCE(RecommendedCourseCredits.recommendedcredits, 0) AS recommendedCredits
 	FROM Students
 	LEFT JOIN RecommendedCourseCredits
 	ON (Students.idnr = RecommendedCourseCredits.idnr)
