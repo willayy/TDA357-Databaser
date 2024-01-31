@@ -58,7 +58,7 @@ CREATE VIEW UncompleteMandatoryCourses AS (
 );
 
 -- Subview of the amount of uncompleted mandatory courses for each all students
-CREATE VIEW NrOfUncompleteMandatoryCourses AS (
+CREATE VIEW AllStudentsUncompleteMandatoryCourses AS (
 	SELECT Students.idnr, COALESCE(COUNT(UncompleteMandatoryCourses.course),0) AS mandatoryLeft
 	FROM Students
 	LEFT JOIN UncompleteMandatoryCourses
@@ -68,7 +68,7 @@ CREATE VIEW NrOfUncompleteMandatoryCourses AS (
 
 -- Subview of all students that have passed a seminar course
 CREATE view PassedSeminarCourses AS (
-SELECT students.idnr, studentpassedcourses.course
+	SELECT students.idnr, studentpassedcourses.course
 	FROM students,studentpassedcourses, classified
 	WHERE (Students.idnr = StudentPassedCourses.idnr)
 	AND (StudentPassedCourses.course = Classified.course)
@@ -76,7 +76,7 @@ SELECT students.idnr, studentpassedcourses.course
 );
 
 -- All students number of seminar courses passed
-Create View NrOfSeminarCoursesPassed AS (
+Create View AllStudentsPassedSeminarCourses AS (
 SELECT Students.idnr, COALESCE(count(courses.code),0) AS numberofpassedseminarcourses
 	FROM Students
 	LEFT JOIN Passedseminarcourses
@@ -96,7 +96,7 @@ CREATE VIEW PassedMathCourses AS (
 );
 
 -- All students sums of math credits
-CREATE VIEW StudentMathCredits AS (
+CREATE VIEW AllStudentsMathCredits AS (
 	SELECT Students.idnr, COALESCE(SUM(Courses.credits),0) AS mathCredits
 	FROM Students
 	LEFT JOIN PassedMathCourses
@@ -129,14 +129,14 @@ CREATE VIEW PathToGraduation AS (
 	SELECT
 	Students.idnr AS student,
 	StudentTotalCredits.totalCredits,
-	NrOfUncompleteMandatoryCourses.mandatoryLeft,
-	StudentMathCredits.mathCredits,
-	NrOfSeminarCoursesPassed.numberOfPassedSeminarCourses AS seminarCourses,
+	AllStudentsUncompleteMandatoryCourses.mandatoryLeft,
+	AllStudentsMathCredits.mathCredits,
+	AllStudentsPassedSeminarCourses.numberOfPassedSeminarCourses AS seminarCourses,
 
 	CASE
-	WHEN NrOfUncompleteMandatoryCourses.mandatoryLeft = 0
-	AND StudentMathCredits.mathCredits >= 20
-	AND NrOfSeminarCoursesPassed.numberOfPassedSeminarCourses >= 1
+	WHEN AllStudentsUncompleteMandatoryCourses.mandatoryLeft = 0
+	AND AllStudentsMathCredits.mathCredits >= 20
+	AND AllStudentsPassedSeminarCourses.numberOfPassedSeminarCourses >= 1
 	AND AllStudentsRecommendedCredits.recommendedCredits >= 10
 	THEN TRUE
 	ELSE FALSE
@@ -145,15 +145,15 @@ CREATE VIEW PathToGraduation AS (
 	FROM 
 	Students,
 	StudentTotalCredits,
-	NrOfUncompleteMandatoryCourses,
-	StudentMathCredits,
-	NrOfSeminarCoursesPassed,
+	AllStudentsUncompleteMandatoryCourses,
+	AllStudentsMathCredits,
+	AllStudentsPassedSeminarCourses,
 	AllStudentsRecommendedCredits
 
 	WHERE
 	Students.idnr = StudentTotalCredits.idnr 
-	AND Students.idnr = NrOfUncompleteMandatoryCourses.idnr 
-	AND Students.idnr = StudentMathCredits.idnr 
-	AND Students.idnr = NrOfSeminarCoursesPassed.idnr
+	AND Students.idnr = AllStudentsUncompleteMandatoryCourses.idnr 
+	AND Students.idnr = AllStudentsMathCredits.idnr 
+	AND Students.idnr = AllStudentsPassedSeminarCourses.idnr
 	AND Students.idnr = AllStudentsRecommendedCredits.idnr
 );
