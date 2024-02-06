@@ -134,10 +134,10 @@ CREATE VIEW PathToGraduation AS (
 	AllStudentsPassedSeminarCourses.numberOfPassedSeminarCourses AS seminarCourses,
 
 	CASE
-	WHEN AllStudentsUncompleteMandatoryCourses.mandatoryLeft = 0
-	AND AllStudentsMathCredits.mathCredits >= 20
-	AND AllStudentsPassedSeminarCourses.numberOfPassedSeminarCourses >= 1
-	AND AllStudentsRecommendedCredits.recommendedCredits >= 10
+		WHEN AllStudentsUncompleteMandatoryCourses.mandatoryLeft = 0
+		AND AllStudentsMathCredits.mathCredits >= 20
+		AND AllStudentsPassedSeminarCourses.numberOfPassedSeminarCourses >= 1
+		AND AllStudentsRecommendedCredits.recommendedCredits >= 10
 	THEN TRUE
 	ELSE FALSE
 	END AS qualified
@@ -150,8 +150,7 @@ CREATE VIEW PathToGraduation AS (
 	AllStudentsPassedSeminarCourses,
 	AllStudentsRecommendedCredits
 
-	WHERE
-	Students.idnr = StudentTotalCredits.idnr 
+	WHERE Students.idnr = StudentTotalCredits.idnr 
 	AND Students.idnr = AllStudentsUncompleteMandatoryCourses.idnr 
 	AND Students.idnr = AllStudentsMathCredits.idnr 
 	AND Students.idnr = AllStudentsPassedSeminarCourses.idnr
