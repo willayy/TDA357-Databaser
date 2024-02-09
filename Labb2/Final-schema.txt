@@ -1,8 +1,12 @@
-# -name- means its a primary key *name* is a secondary key
-
-Students(-idnr-, name, login, year)
+# -name- means its a primary key *name* is a secondary key.
+# Taken was cut from ER schema because it isnt needed for domain description.
+# EnrolledInProgram was cut from ER Schema because it can be a 1-1 relationship from a Students attribute.
+# Year attribute was cut from ER schema because it isnt needed for domain description.
 
 Programs(-name-, abbreviation)
+
+Students(-idnr-, name, login, program)
+    program -> Programs.name
 
 Departments(-name-, abbreviation)
 
@@ -11,10 +15,6 @@ Classifications(-name-)
 PartOf(-program-, department)
 	program → Programs.name
 	department → Departments.name
-
-EnrolledInProgram(-student-, program)
-	student → Students.idnr
-	program → Programs.name
 
 Branch(-name-, -program-)
 	program → Programs.name
@@ -53,7 +53,7 @@ Taken(-student-, course, grade)
     student → Students.idnr
     course → Courses.code
 
-WaitingList(-course-, *student*, *position*)
+WaitingList(-course-, -student-, *position*)
     student → Students.idnr
     course → LimitedCourses.code
 

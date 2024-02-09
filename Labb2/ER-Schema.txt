@@ -1,4 +1,4 @@
-Students(-idnr-, name, login)
+Students(-idnr-, name, login, year)
 
 Programs(-name-, abbreviation)
 
