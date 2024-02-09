@@ -1,3 +1,6 @@
+-- We decided to exlcude Taking relationship because it isnt needed from the domain description, we also
+-- made EnrolledInProgram into an attribute of Students instead of a relationship, since it is a 1-1 relationship
+
 CREATE TABLE Programs (
     name TEXT PRIMARY KEY,
     abbreviation TEXT NOT NULL,

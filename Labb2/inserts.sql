@@ -1,3 +1,9 @@
+INSERT INTO Departments VALUES ('Dep1','D1');
+INSERT INTO Programs VALUES ('Prog1','P1');
+INSERT INTO Programs VALUES ('Prog2','P2');
+INSERT INTO PartOf VALUES ('Prog1','Dep1');
+INSERT INTO PartOf VALUES ('Prog2','Dep1');
+
 INSERT INTO Branches VALUES ('B1','Prog1');
 INSERT INTO Branches VALUES ('B2','Prog1');
 INSERT INTO Branches VALUES ('B1','Prog2');
