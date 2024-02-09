@@ -3,12 +3,12 @@
 
 CREATE TABLE Programs (
     name TEXT PRIMARY KEY,
-    abbreviation TEXT NOT NULL,
+    abbreviation TEXT NOT NULL UNIQUE
 );
 
 CREATE TABLE Departments (
     name TEXT PRIMARY KEY,
-    abbreviation TEXT NOT NULL,
+    abbreviation TEXT NOT NULL UNIQUE
 );
 
 CREATE TABLE Branches (
@@ -22,7 +22,8 @@ CREATE TABLE Students (
 	idnr TEXT PRIMARY KEY CHECK (idnr LIKE '__________'),
 	name TEXT NOT NULL,
 	login TEXT NOT NULL,
-	FOREIGN KEY program REFERENCES Programs(name) ON DELETE CASCADE ON UPDATE CASCADE,
+    program TEXT NOT NULL,
+	FOREIGN KEY (program) REFERENCES Programs(name) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE PartOf (
@@ -49,8 +50,8 @@ CREATE TABLE LimitedCourses (
 
 CREATE TABLE StudentBranches (
 	student TEXT PRIMARY KEY,
-    program TEXT NOT NULL,
-	branch TEXT NOT NULL CHECK (branch IN (SELECT name FROM Branches WHERE program = Branches.program)),
+    branch TEXT NOT NULL,
+	program TEXT NOT NULL,
 	FOREIGN KEY (student) REFERENCES Students(idnr) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (program) REFERENCES Programs(name) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (branch, program) REFERENCES Branches(name, program) ON DELETE CASCADE ON UPDATE CASCADE
@@ -116,8 +117,8 @@ CREATE TABLE Taken (
 CREATE TABLE WaitingList (
 	student TEXT NOT NULL,
 	course TEXT NOT NULL,
-	position INTEGER NOT NULL UNIQUE 
-    CHECK (position NOT IN (SELECT position FROM WaitingList WHERE course = WaitingList.course) AND position > 0),
+	position INTEGER NOT NULL CHECK (position > 0),
+    UNIQUE (course, position),
 	FOREIGN KEY (student) REFERENCES Students(idnr) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (course) REFERENCES LimitedCourses(code) ON DELETE CASCADE ON UPDATE CASCADE,
 	PRIMARY KEY (student, course)
