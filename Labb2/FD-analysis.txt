@@ -1,0 +1,56 @@
+
+D(studentIdnr,studentName,login,branchName,programName,programAbbreviation,courseCode,courseName,credits,departmentName,departmentAbbreviation,capacity,classification,grade,position)
+
+FD's :
+
+login → studentIdnr;
+
+studentIdnr → studentName, login, programName, branchName;
+
+departmentName → departmentAbbreviation;
+
+courseCode → courseName, credits, capacity, departmentName;
+
+courseName → courseCode;
+
+studentIdnr, courseCode → grade, position;
+
+departAbbreviation → departmentName;
+
+programName → programAbbreviation;
+
+BCNF :
+
+D(studentIdnr,studentName,login,branchName,programName,programAbbreviation,courseCode,courseName,credits,departmentName,departmentAbbreviation,capacity,classification,grade,position)
+
+R0(departmentName, departmentAbbreviation)
+	departmentName → departmentAbbreviation;
+
+R1(programName, programAbbreviation)
+	programName → programAbbreviation;
+
+R2(courseCode, courseName, credits, capacity, departmentName)
+    courseCode → courseName, credits, capacity, departmentName;
+
+R3(studentIdnr, studentName, login, programName, branchName)
+    studentIdnr → studentName, login, programName, branchName;
+
+R4(studentIdnr, courseCode, grade, position)
+	studentIdnr, courseCode → grade, position;
+
+/*
+*   Here we only have (studentIdnr, classification, courseCode) left in the domain 
+*    and we realise these are MVD’s so we decompose into 4NF
+*/
+
+R5(courseCode, classification)
+    courseCode →m classification
+
+R6(studentIdnr, courseCode)
+	studentIdnr →m courseCode
+
+/*
+*    At the end we are left with only one attribute which is a superkey to itself
+*/
+
+R7(studentIdnr)
