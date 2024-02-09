@@ -11,7 +11,7 @@ departmentName → departmentAbbreviation;
 
 courseCode → courseName, credits, capacity, departmentName;
 
-courseName → courseCode;
+courseCode, position → studentIdnr;
 
 studentIdnr, courseCode → grade, position;
 
@@ -21,7 +21,7 @@ programName → programAbbreviation;
 
 BCNF :
 
-# -name- means its a primary key
+# -name- means its a primary key *name* is a secondary key
 
 D(studentIdnr,studentName,login,branchName,programName,programAbbreviation,courseCode,
 courseName,credits,departmentName,departmentAbbreviation,capacity,classification,grade,position)
