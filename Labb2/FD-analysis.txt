@@ -21,6 +21,8 @@ programName → programAbbreviation;
 
 BCNF :
 
+# -name- means its a primary key
+
 D(studentIdnr,studentName,login,branchName,programName,programAbbreviation,courseCode,
 courseName,credits,departmentName,departmentAbbreviation,capacity,classification,grade,position)
 
