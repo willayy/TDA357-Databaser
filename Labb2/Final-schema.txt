@@ -1,58 +1,60 @@
-Programs(name, abbreviation)
+Students(-idnr-, name, login, year)
 
-Departments(name, abbreviation)
+Programs(-name-, abbreviation)
 
-Classifications(name)
+Departments(-name-, abbreviation)
 
-PartOf(program, department)
+Classifications(-name-)
+
+PartOf(-program-, department)
 	program → Programs.name
 	department → Departments.name
 
-EnrolledInProgram(student, program)
+EnrolledInProgram(-student-, program)
 	student → Students.idnr
 	program → Programs.name
 
-Branch(name, program)
+Branch(-name-, -program-)
 	program → Programs.name
 
-StudentBranches(student, branch, program)
+StudentBranches(-student-, branch, program)
     student → Students.idnr
     (branch, program) → Branches.(name, program)
 
-Courses(code, name, credits, department)
+Courses(-code-, name, credits, department)
 	department → Departments.name
 
-LimitedCourses(code, capacity)
+LimitedCourses(-code-, capacity)
     code → Courses.code
 
-Classified(course, classification)
+Classified(-course-, -classification-)
     course → courses.code
     classification → Classifications.name
 
-MandatoryProgram(course, program)
+MandatoryProgram(-course-, -program-)
 	program → Programs.name
     course → Courses.code
 
-MandatoryBranch(course, branch, program)
+MandatoryBranch(-course-, -branch-, -program-)
     (branch, program) → Branches.(name, program)
     course → Courses.code
 
-RecommendedBranch(course, branch, program)
+RecommendedBranch(-course-, -branch-, -program-)
     course → Courses.code
     (branch, program) → Branches.(name, program)
 
-Registered(student, course)
+Registered(-student-, -course-)
     student → Students.idnr
     course → Courses.code
 
-Taken(student, course, grade)
+Taken(-student-, course, grade)
     student → Students.idnr
     course → Courses.code
 
-WaitingList(student, course, position)
+WaitingList(-student-, course, position)
     student → Students.idnr
     course → LimitedCourses.code
 
-Taking(student, course)
+Taking(-student-, -course-)
 	student → Students.idnr
 	course → Course.code
