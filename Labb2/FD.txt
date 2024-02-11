@@ -36,7 +36,7 @@ R2(-courseCode-, courseName, credits, capacity, departmentName)
 
 R3(-studentIdnr-, studentName, login, programName, branchName)
 
-R4(-studentIdnr-, courseCode, grade, position)
+R4(-studentIdnr-, -courseCode-, grade, position)
 
 # Here we only have (studentIdnr, classification, courseCode) left in the 
 # domain and we realise these are MVD’s so we decompose into 4NF
