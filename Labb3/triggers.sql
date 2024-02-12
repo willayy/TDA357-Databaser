@@ -41,7 +41,7 @@ CREATE FUNCTION try_register() RETURNS TRIGGER AS $try_register$
                 AND RegistrationStatus.course = NEW.course
                 AND RegistrationStatus.status = 'registered'
             ) THEN RAISE EXCEPTION 'Student cant register for a course they are already registered for';
-            WHEN EXISTS (
+            WHEN NOT EXISTS (
                 SELECT * FROM StudentPassedCourses
                 JOIN CoursePrerequisites ON 
                 StudentPassedCourses.course = CoursePrerequisites.course
