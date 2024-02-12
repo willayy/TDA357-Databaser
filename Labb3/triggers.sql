@@ -49,8 +49,12 @@ CREATE FUNCTION try_register() RETURNS TRIGGER AS $try_register$
             WHEN EXISTS(
                 SELECT * FROM SumRegistrations
                 WHERE SumRegistrations.code = NEW.course AND SumRegistrations.registeredStudents >= SumRegistrations.capacity
-            ) THEN RAISE EXCEPTION 'Course is full';
+            ) THEN (
+                RAISE NOTICE 'Course is full putting student: % in waiting list for course: %', NEW.student, NEW.course;
+                INSERT INTO WaitingList VALUES (NEW.student, NEW.course, (SELECT COUNT(*) FROM WaitingList WHERE WaitingList.course = NEW.course) + 1)
+            );
         END CASE;
+
         RETURN NEW;
     END;
 $try_register$ LANGUAGE plpgsql;
