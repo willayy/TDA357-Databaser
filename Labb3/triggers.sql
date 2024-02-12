@@ -29,30 +29,31 @@ CREATE TRIGGER emp_stamp BEFORE INSERT OR UPDATE ON emp
 CREATE FUNCTION try_register() RETURNS TRIGGER AS $try_register$
     BEGIN
         CASE
-            WHEN EXISTS(
+            WHEN EXISTS( -- Check if student is already is on waiting list
                 SELECT * FROM RegistrationStatus
                 WHERE RegistrationStatus.student = NEW.student 
                 AND RegistrationStatus.course = NEW.course
                 AND RegistrationStatus.status = 'waiting'
             ) THEN RAISE EXCEPTION 'Student cant register for a course they are on the waiting list for';
-            WHEN EXISTS(
+            WHEN EXISTS( -- Check if student is already registered
                 SELECT * FROM RegistrationStatus
                 WHERE RegistrationStatus.student = NEW.student 
                 AND RegistrationStatus.course = NEW.course
                 AND RegistrationStatus.status = 'registered'
             ) THEN RAISE EXCEPTION 'Student cant register for a course they are already registered for';
-            WHEN NOT EXISTS (
+            WHEN NOT EXISTS ( -- Check if student is qualified for the course
                 SELECT * FROM StudentPassedCourses
                 JOIN CoursePrerequisites ON 
                 StudentPassedCourses.course = CoursePrerequisites.course
                 WHERE StudentPassedCourses.idnr = NEW.student AND CoursePrerequisites.course = NEW.course
             ) THEN RAISE EXCEPTION 'Student cant register for a course they are not qualified for';
-            WHEN EXISTS(
+            WHEN EXISTS( -- Check if course is full
                 SELECT * FROM SumRegistrations
                 WHERE SumRegistrations.code = NEW.course AND SumRegistrations.registeredStudents >= SumRegistrations.capacity
             ) THEN (
                 RAISE NOTICE 'Course is full putting student: % in waiting list for course: %', NEW.student, NEW.course;
                 INSERT INTO WaitingList VALUES (NEW.student, NEW.course, (SELECT COUNT(*) FROM WaitingList WHERE WaitingList.course = NEW.course) + 1)
+                RETURN NULL;
             );
         END CASE;
 
