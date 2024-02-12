@@ -48,7 +48,7 @@ CREATE FUNCTION try_register() RETURNS TRIGGER AS $try_register$
             ) THEN RAISE EXCEPTION 'Student cant register for a course they are not qualified for';
             WHEN EXISTS(
                 SELECT * FROM SumRegistrations
-                WHERE SumRegistrations.code = NEW.course AND SumRegistrations.registeredStudents >= Registrations.capacity
+                WHERE SumRegistrations.code = NEW.course AND SumRegistrations.registeredStudents >= SumRegistrations.capacity
             ) THEN RAISE EXCEPTION 'Course is full';
         END CASE;
         RETURN NEW;
