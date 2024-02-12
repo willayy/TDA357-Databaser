@@ -14,10 +14,12 @@ SET client_min_messages TO NOTICE; -- More talk
 -- file
 -- Note that these are not SQL statements but rather Postgres commands (no
 -- terminating semicolon).
+
 \ir tables.sql
 \ir triggers.sql
 \ir inserts.sql
 \ir views.sql
+
 -- Tests various queries from the assignment, uncomment these as you make progress
 SELECT idnr, name, login, program, branch FROM BasicInformation ORDER BY idnr;
 SELECT student, course, courseName, grade, credits FROM FinishedCourses ORDER BY
