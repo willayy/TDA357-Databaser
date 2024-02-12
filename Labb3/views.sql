@@ -17,6 +17,14 @@ CREATE VIEW Registrations AS (
 	SELECT WaitingList.student, WaitingList.course, 'waiting' AS status FROM WaitingList
 );
 
+-- View of students registered to a specific course and the max capacity
+CREATE VIEW SumRegistrations AS (
+	SELECT Courses.code, COALESCE(COUNT(Registered.student), 0) AS registeredStudents, LimitedCourses.capacity
+	FROM Registered, Courses, LimitedCourses 
+	WHERE (Courses.code = Registered.course)
+	AND (Courses.code = LimitedCourses.course)
+)
+
 -- Subview of students passed courses, i.e. courses with a grade other than U
 CREATE VIEW StudentPassedCourses AS (	
 	SELECT Students.idnr, Taken.course

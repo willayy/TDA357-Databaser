@@ -16,9 +16,9 @@ SET client_min_messages TO NOTICE; -- More talk
 -- terminating semicolon).
 
 \ir tables.sql
+\ir views.sql
 \ir triggers.sql
 \ir inserts.sql
-\ir views.sql
 
 -- Tests various queries from the assignment, uncomment these as you make progress
 SELECT idnr, name, login, program, branch FROM BasicInformation ORDER BY idnr;
