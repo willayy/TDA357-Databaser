@@ -26,7 +26,28 @@ CREATE TRIGGER emp_stamp BEFORE INSERT OR UPDATE ON emp
 
 -- Our stuff
 
-CREATE FUNCTION try_register() RETURNS trigger AS $try_register$
+CREATE FUNCTION try_register() RETURNS TRIGGER AS $try_register$
     BEGIN
-
+        CASE
+            WHEN EXISTS(
+                SELECT * FROM WaitingList
+                WHERE WaitingList.student = NEW.student AND WaitingList.course = NEW.course
+            ) THEN RAISE EXCEPTION 'Student cant register for a course they are on the waiting list for';
+            WHEN EXISTS(
+                SELECT * FROM Registrations
+                WHERE Registrations.student = NEW.student AND Registrations.course = NEW.course
+            ) THEN RAISE EXCEPTION 'Student cant register for a course they are already registered for';
+            WHEN EXISTS (
+                SELECT * FROM StudentPassedCourses
+                LEFT JOIN CoursePrerequisites ON StudentPassedCourses.course = CoursePrerequisites.course
+                WHERE StudentPassedCourses.student = NEW.student AND CoursePrerequisites.prerequisite = NEW.course
+            ) THEN RAISE EXCEPTION 'Student cant register for a course they are not qualified for';
+            WHEN EXISTS(
+                SELECT * FROM SumRegistrations
+                WHERE Registrations.course = NEW.course AND Registrations.registeredStudents >= Registrations.capacity
+            ) THEN RAISE EXCEPTION 'Course is full';
+        END CASE;
+        RETURN NEW;
+    END;
+$try_register$ LANGUAGE plpgsql;
 
