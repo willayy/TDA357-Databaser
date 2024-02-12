@@ -30,12 +30,16 @@ CREATE FUNCTION try_register() RETURNS TRIGGER AS $try_register$
     BEGIN
         CASE
             WHEN EXISTS(
-                SELECT * FROM WaitingList
-                WHERE WaitingList.student = NEW.student AND WaitingList.course = NEW.course
+                SELECT * FROM RegistrationStatus
+                WHERE RegistrationStatus.student = NEW.student 
+                AND RegistrationStatus.course = NEW.course
+                AND RegistrationStatus.status = 'waiting'
             ) THEN RAISE EXCEPTION 'Student cant register for a course they are on the waiting list for';
             WHEN EXISTS(
-                SELECT * FROM Registrations
-                WHERE Registrations.student = NEW.student AND Registrations.course = NEW.course
+                SELECT * FROM RegistrationStatus
+                WHERE RegistrationStatus.student = NEW.student 
+                AND RegistrationStatus.course = NEW.course
+                AND RegistrationStatus.status = 'registered'
             ) THEN RAISE EXCEPTION 'Student cant register for a course they are already registered for';
             WHEN EXISTS (
                 SELECT * FROM StudentPassedCourses
@@ -52,4 +56,4 @@ CREATE FUNCTION try_register() RETURNS TRIGGER AS $try_register$
 $try_register$ LANGUAGE plpgsql;
 
 CREATE TRIGGER try_register BEFORE INSERT OR UPDATE ON Registered
-    FOR EACH ROW EXECUTE FUNCTION emp_stamp();
+    FOR EACH ROW EXECUTE FUNCTION try_register();
