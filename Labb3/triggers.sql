@@ -36,10 +36,10 @@ CREATE FUNCTION try_register() RETURNS TRIGGER AS $try_register$
                 AND RegistrationStatus.status = 'waiting'
             ) THEN RAISE EXCEPTION 'Student cant register for a course they are on the waiting list for';
             WHEN EXISTS(
-                SELECT * FROM Registrations
-                WHERE Registrations.student = NEW.student 
-                AND Registrations.course = NEW.course
-                AND Registrations.status = 'registered'
+                SELECT * FROM RegistrationStatus
+                WHERE RegistrationStatus.student = NEW.student 
+                AND RegistrationStatus.course = NEW.course
+                AND RegistrationStatus.status = 'registered'
             ) THEN RAISE EXCEPTION 'Student cant register for a course they are already registered for';
             WHEN EXISTS (
                 SELECT * FROM StudentPassedCourses
