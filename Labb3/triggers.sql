@@ -56,4 +56,4 @@ CREATE FUNCTION try_register() RETURNS TRIGGER AS $try_register$
 $try_register$ LANGUAGE plpgsql;
 
 CREATE TRIGGER try_register BEFORE INSERT OR UPDATE ON registered
-    FOR EACH ROW EXECUTE FUNCTION emp_stamp();
+    FOR EACH ROW EXECUTE FUNCTION try_register();
