@@ -26,7 +26,7 @@ CREATE VIEW SumRegistrations AS (
 	LEFT JOIN LimitedCourses
 	ON (Courses.code = LimitedCourses.code)
 	GROUP BY Courses.code, LimitedCourses.capacity
-)
+);
 
 -- Subview of students passed courses, i.e. courses with a grade other than U
 CREATE VIEW StudentPassedCourses AS (	

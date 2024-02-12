@@ -44,7 +44,7 @@ CREATE FUNCTION try_register() RETURNS TRIGGER AS $try_register$
             WHEN EXISTS (
                 SELECT * FROM StudentPassedCourses
                 LEFT JOIN CoursePrerequisites ON StudentPassedCourses.course = CoursePrerequisites.course
-                WHERE StudentPassedCourses.student = NEW.student AND CoursePrerequisites.prerequisite = NEW.course
+                WHERE StudentPassedCourses.idnr = NEW.student AND CoursePrerequisites.prerequisite = NEW.course
             ) THEN RAISE EXCEPTION 'Student cant register for a course they are not qualified for';
             WHEN EXISTS(
                 SELECT * FROM SumRegistrations
