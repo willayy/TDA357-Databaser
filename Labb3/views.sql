@@ -20,9 +20,12 @@ CREATE VIEW Registrations AS (
 -- View of students registered to a specific course and the max capacity
 CREATE VIEW SumRegistrations AS (
 	SELECT Courses.code, COALESCE(COUNT(Registered.student), 0) AS registeredStudents, LimitedCourses.capacity
-	FROM Registered, Courses, LimitedCourses 
-	WHERE (Courses.code = Registered.course)
-	AND (Courses.code = LimitedCourses.course)
+	FROM Courses
+	LEFT JOIN Registered
+	ON (Courses.code = Registered.course)
+	LEFT JOIN LimitedCourses
+	ON (Courses.code = LimitedCourses.code)
+	GROUP BY Courses.code, LimitedCourses.capacity
 )
 
 -- Subview of students passed courses, i.e. courses with a grade other than U
