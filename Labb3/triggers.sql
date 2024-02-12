@@ -43,12 +43,12 @@ CREATE FUNCTION try_register() RETURNS TRIGGER AS $try_register$
             ) THEN RAISE EXCEPTION 'Student cant register for a course they are already registered for';
             WHEN EXISTS (
                 SELECT * FROM StudentPassedCourses
-                LEFT JOIN CoursePrerequisites ON StudentPassedCourses.course = CoursePrerequisites.course
+                JOIN CoursePrerequisites ON StudentPassedCourses.course = CoursePrerequisites.course
                 WHERE StudentPassedCourses.idnr = NEW.student AND CoursePrerequisites.prerequisite = NEW.course
             ) THEN RAISE EXCEPTION 'Student cant register for a course they are not qualified for';
             WHEN EXISTS(
                 SELECT * FROM SumRegistrations
-                WHERE Registrations.course = NEW.course AND Registrations.registeredStudents >= Registrations.capacity
+                WHERE SumRegistrations.course = NEW.course AND SumRegistrations.registeredStudents >= Registrations.capacity
             ) THEN RAISE EXCEPTION 'Course is full';
         END CASE;
         RETURN NEW;
