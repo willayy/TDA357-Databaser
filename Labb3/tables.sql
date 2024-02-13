@@ -124,7 +124,7 @@ CREATE TABLE WaitingList (
 
 CREATE TABLE CoursePrerequisites (
 	course TEXT NOT NULL,
-	prerequisite TEXT,
+	prerequisite TEXT NOT NULL,
 	FOREIGN KEY (course) REFERENCES Courses(code) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (prerequisite) REFERENCES Courses(code) ON DELETE CASCADE ON UPDATE CASCADE,
 	PRIMARY KEY (course, prerequisite)
