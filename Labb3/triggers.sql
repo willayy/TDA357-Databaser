@@ -22,7 +22,7 @@ CREATE FUNCTION try_register() RETURNS TRIGGER AS $try_register$
                 EXCEPT
                 SELECT prerequisite FROM AllCoursesPrerequisites WHERE prerequisite = 'NONE'
                 EXCEPT
-                SELECT course FROM StudentPassedCourses WHERE StudentPassedCourses.idnr = NEW.idnr
+                SELECT course FROM StudentPassedCourses WHERE StudentPassedCourses.idnr = NEW.student
             ) THEN RAISE EXCEPTION 'Student cant register for a course they are not qualified for';
 
             WHEN EXISTS( -- Check if course is full
@@ -32,8 +32,10 @@ CREATE FUNCTION try_register() RETURNS TRIGGER AS $try_register$
                 RAISE NOTICE 'Course is full putting student: % in waiting list for course: %', NEW.student, NEW.course;
                 INSERT INTO WaitingList VALUES (NEW.student, NEW.course, (SELECT COUNT(*) FROM WaitingList WHERE WaitingList.course = NEW.course) + 1);
             
-            ELSE INSERT INTO Registered VALUES (NEW.student, NEW.course);
+            ELSE 
+                RAISE NOTICE 'Student: % registered for course: %', NEW.student, NEW.course;
         END CASE;
+        RETURN NEW;
     END;
 $try_register$ LANGUAGE plpgsql;
 
