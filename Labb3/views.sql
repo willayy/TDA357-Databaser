@@ -167,3 +167,4 @@ CREATE VIEW PathToGraduation AS (
 	AND Students.idnr = AllStudentsPassedSeminarCourses.idnr
 	AND Students.idnr = AllStudentsRecommendedCredits.idnr
 );
+
