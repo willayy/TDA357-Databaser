@@ -168,3 +168,9 @@ CREATE VIEW PathToGraduation AS (
 	AND Students.idnr = AllStudentsRecommendedCredits.idnr
 );
 
+CREATE VIEW AllCoursesPreRequisites AS (
+	SELECT Courses.code AS code, COALESCE(CoursePrerequisites.prerequisite, 'NONE') AS prerequisite
+	FROM Courses
+	LEFT JOIN CoursePrerequisites
+	ON (Courses.code = CoursePrerequisites.course)
+);

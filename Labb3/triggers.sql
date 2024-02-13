@@ -1,29 +1,3 @@
-
-CREATE FUNCTION emp_stamp() RETURNS trigger AS $emp_stamp$
-    BEGIN
-        -- Check that empname and salary are given
-        IF NEW.empname IS NULL THEN
-            RAISE EXCEPTION 'empname cannot be null';
-        END IF;
-        IF NEW.salary IS NULL THEN
-            RAISE EXCEPTION '% cannot have null salary', NEW.empname;
-        END IF;
-
-        -- Who works for us when they must pay for it?
-        IF NEW.salary < 0 THEN
-            RAISE EXCEPTION '% cannot have a negative salary', NEW.empname;
-        END IF;
-
-        -- Remember who changed the payroll when
-        NEW.last_date := current_timestamp;
-        NEW.last_user := current_user;
-        RETURN NEW;
-    END;
-$emp_stamp$ LANGUAGE plpgsql;
-
-CREATE TRIGGER emp_stamp BEFORE INSERT OR UPDATE ON emp
-    FOR EACH ROW EXECUTE FUNCTION emp_stamp();
-
 -- Our stuff
 
 CREATE FUNCTION try_register() RETURNS TRIGGER AS $try_register$
@@ -43,11 +17,12 @@ CREATE FUNCTION try_register() RETURNS TRIGGER AS $try_register$
                 AND RegistrationStatus.status = 'registered'
             ) THEN RAISE EXCEPTION 'Student cant register for a course they are already registered for';
             
-            WHEN NOT EXISTS ( -- Check if student is qualified for the course
-                SELECT * FROM StudentPassedCourses
-                JOIN CoursePrerequisites ON 
-                StudentPassedCourses.course = CoursePrerequisites.course
-                WHERE StudentPassedCourses.idnr = NEW.student AND CoursePrerequisites.course = NEW.course
+            WHEN EXISTS ( -- Check if student is qualified for the course
+                SELECT prerequisite FROM AllCoursesPrerequisites WHERE AllCoursesPrerequisites.code = NEW.course
+                EXCEPT
+                SELECT prerequisite FROM AllCoursesPrerequisites WHERE prerequisite = 'NONE'
+                EXCEPT
+                SELECT course FROM StudentPassedCourses WHERE StudentPassedCourses.idnr = NEW.idnr
             ) THEN RAISE EXCEPTION 'Student cant register for a course they are not qualified for';
 
             WHEN EXISTS( -- Check if course is full
