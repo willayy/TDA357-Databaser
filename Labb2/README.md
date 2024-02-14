@@ -1,1 +1,0 @@
-ER-diagram.draWIO is a .xml file that you can open with draw.io webapp or probably any other xml viewer.

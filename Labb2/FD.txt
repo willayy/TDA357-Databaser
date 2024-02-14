@@ -21,7 +21,7 @@ programName → programAbbreviation;
 
 BCNF :
 
-# -name- means its a primary key *name* is a secondary key
+# -name- means its a primary key.
 # The relatiopnships are created in chronoliogical order so departmentAbbreviation was eliminated first
 # programAbbreviation was eliminated second etc...
 
@@ -40,6 +40,7 @@ R4(-studentIdnr-, -courseCode-, grade, position)
 
 # Here we only have (studentIdnr, classification, courseCode) left in the 
 # domain and we realise these are MVD’s so we decompose into 4NF
+# The relations used are "Classified relation" "Registered relation"
 
 R5(-courseCode-, -classification-)
 
