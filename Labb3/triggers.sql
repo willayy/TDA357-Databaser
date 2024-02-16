@@ -67,11 +67,18 @@ CREATE FUNCTION unregister() RETURNS TRIGGER AS $unregister$
                         SELECT * FROM SumRegistrations
                         WHERE SumRegistrations.code = OLD.course AND SumRegistrations.registeredStudents >= SumRegistrations.capacity
                     ) THEN RAISE NOTICE 'Course % is still full, no students added from waiting list', OLD.course;
-                    ELSE -- If course is not full, take the first student from the waiting list and register them
-                        INSERT INTO Registered SELECT student, course FROM WaitingList WHERE WaitingList.course = OLD.course AND WaitingList.position = 1;
-                        DELETE FROM WaitingList WHERE WaitingList.course = OLD.course AND WaitingList.position = 1;
-                        UPDATE WaitingList SET position = position - 1 WHERE WaitingList.course = OLD.course AND WaitingList.position > 1;
-                        RAISE NOTICE 'Unregistering caused the first student on the waiting list to be registered for course %', OLD.course;
+                    ELSE -- If course is not full, take the first student from the waiting list (if there is one) and register them.
+                        CASE
+                            WHEN EXISTS( -- Check if waitinglist for unregistered course is empty
+                                SELECT * FROM WaitingList
+                                WHERE WaitingList.course = OLD.course
+                            ) THEN 
+                                RAISE NOTICE 'First student on waiting list for course % is being registered', OLD.course;
+                                INSERT INTO Registered SELECT student, course FROM WaitingList WHERE WaitingList.course = OLD.course AND WaitingList.position = 1;
+                                DELETE FROM WaitingList WHERE WaitingList.course = OLD.course AND WaitingList.position = 1;
+                                UPDATE WaitingList SET position = position - 1 WHERE WaitingList.course = OLD.course AND WaitingList.position > 1;
+                            ELSE RAISE NOTICE 'No students on waiting list for course %', OLD.course;
+                        END CASE;
                 END CASE;
             
             ELSE RAISE EXCEPTION 'Student cant unregister from a course they are not registered for or on the waiting list for';
