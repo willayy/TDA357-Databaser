@@ -66,7 +66,7 @@ CREATE FUNCTION unregister() RETURNS TRIGGER AS $unregister$
                     WHEN EXISTS( -- Check if course is full
                         SELECT * FROM SumRegistrations
                         WHERE SumRegistrations.code = NEW.course AND SumRegistrations.registeredStudents >= SumRegistrations.capacity
-                    ) THEN BREAK;
+                    ) THEN
                     ELSE -- If course is not full, take the first student from the waiting list and register them
                         INSERT INTO Registered SELECT * FROM WaitingList WHERE WaitingList.course = NEW.course AND WaitingList.position = 1;
                         DELETE FROM WaitingList WHERE WaitingList.course = NEW.course AND WaitingList.position = 1;
