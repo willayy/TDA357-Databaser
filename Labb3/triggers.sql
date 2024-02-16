@@ -46,43 +46,43 @@ CREATE FUNCTION unregister() RETURNS TRIGGER AS $unregister$
         CASE
             WHEN EXISTS( -- Check if student is on waiting list
                 SELECT * FROM RegistrationStatus
-                WHERE RegistrationStatus.student = NEW.student 
-                AND RegistrationStatus.course = NEW.course
+                WHERE RegistrationStatus.student = OLD.student 
+                AND RegistrationStatus.course = OLD.course
                 AND RegistrationStatus.status = 'waiting'
             ) THEN 
-                DELETE FROM WaitingList WHERE WaitingList.student = NEW.student AND WaitingList.course = NEW.course;
-                UPDATE WaitingList SET position = position - 1 WHERE WaitingList.course = NEW.course AND WaitingList.position > NEW.position;
-                RAISE NOTICE 'Student: % unregistered from waiting list for course: %', NEW.student, NEW.course;
+                DELETE FROM WaitingList WHERE WaitingList.student = NEW.student AND WaitingList.course = OLD.course;
+                UPDATE WaitingList SET position = position - 1 WHERE WaitingList.course = OLD.course AND WaitingList.position > OLD.position;
+                RAISE NOTICE 'Student: % unregistered from waiting list for course: %', OLD.student, OLD.course;
 
             WHEN EXISTS( -- Check if student is registered
                 SELECT * FROM RegistrationStatus
-                WHERE RegistrationStatus.student = NEW.student 
-                AND RegistrationStatus.course = NEW.course
-                AND RegistrationStatus.status = 'registered'
+                WHERE RegistrationStatus.student = OLD.student 
+                AND RegistrationStatus.course = OLD.course
+                AND (RegistrationStatus.status = 'registered')
             ) THEN 
-                DELETE FROM Registered WHERE Registered.student = NEW.student AND Registered.course = NEW.course;
-                RAISE NOTICE 'Student: % unregistered from course: %', NEW.student, NEW.course;
+                DELETE FROM Registered WHERE Registered.student = OLD.student AND Registered.course = OLD.course;
+                RAISE NOTICE 'Student: % unregistered from course: %', OLD.student, OLD.course;
                 CASE
                     WHEN EXISTS( -- Check if course is full
                         SELECT * FROM SumRegistrations
-                        WHERE SumRegistrations.code = NEW.course AND SumRegistrations.registeredStudents >= SumRegistrations.capacity
+                        WHERE SumRegistrations.code = OLD.course AND SumRegistrations.registeredStudents >= SumRegistrations.capacity
                     ) THEN
                     ELSE -- If course is not full, take the first student from the waiting list and register them
-                        INSERT INTO Registered SELECT * FROM WaitingList WHERE WaitingList.course = NEW.course AND WaitingList.position = 1;
-                        DELETE FROM WaitingList WHERE WaitingList.course = NEW.course AND WaitingList.position = 1;
-                        UPDATE WaitingList SET position = position - 1 WHERE WaitingList.course = NEW.course AND WaitingList.position > 1;
-                        RAISE NOTICE 'Unregistering caused the first student on the waiting list to be registered for course %', NEW.course;
+                        INSERT INTO Registered SELECT student, course FROM WaitingList WHERE WaitingList.course = OLD.course AND WaitingList.position = 1;
+                        DELETE FROM WaitingList WHERE WaitingList.course = OLD.course AND WaitingList.position = 1;
+                        UPDATE WaitingList SET position = position - 1 WHERE WaitingList.course = OLD.course AND WaitingList.position > 1;
+                        RAISE NOTICE 'Unregistering caused the first student on the waiting list to be registered for course %', OLD.course;
                 END CASE;
             
             ELSE RAISE EXCEPTION 'Student cant unregister from a course they are not registered for or on the waiting list for';
         END CASE;
-        RETURN NEW;
+        RETURN OLD;
     END;
 $unregister$ LANGUAGE plpgsql;
 
-CREATE TRIGGER unregister INSTEAD OF UPDATE OR DELETE ON RegistrationStatus
+CREATE TRIGGER unregister INSTEAD OF DELETE ON RegistrationStatus
     FOR EACH ROW EXECUTE FUNCTION unregister();
 
-CREATE TRIGGER try_register INSTEAD OF UPDATE OR INSERT ON RegistrationStatus
+CREATE TRIGGER try_register INSTEAD OF INSERT ON RegistrationStatus
     FOR EACH ROW EXECUTE FUNCTION try_register();
 
