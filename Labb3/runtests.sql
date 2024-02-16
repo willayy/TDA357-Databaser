@@ -24,14 +24,35 @@ SET client_min_messages TO NOTICE; -- More talk
 SELECT idnr, name, login, program, branch FROM BasicInformation ORDER BY idnr;
 SELECT student, course, courseName, grade, credits FROM FinishedCourses ORDER BY
 (student, course);
-SELECT student, course, status FROM Registrations ORDER BY (status, course,
+SELECT student, course, status FROM RegistrationStatus ORDER BY (status, course,
 student);
 SELECT student, totalCredits, mandatoryLeft, mathCredits, seminarCourses,
 qualified FROM PathToGraduation ORDER BY student;
+
 -- Helper views for PathToGraduation (optional)
---SELECT student, course, credits FROM PassedCourses ORDER BY (student, course);
---SELECT student, course FROM UnreadMandatory ORDER BY (student, course);
---SELECT student, course, credits FROM RecommendedCourses ORDER BY (student,
--- course);
+SELECT idnr, course FROM StudentPassedCourses ORDER BY (idnr, course);
+SELECT idnr, course FROM UncompleteMandatoryCourses ORDER BY (idnr, course);
+SELECT idnr, recommendedCredits FROM RecommendedCourseCredits ORDER BY (idnr);
 -- Life-hack: When working on a new view you can write it as a query here (without
 -- creating a view) and when it works just add CREATE VIEW and put it in views.sql
+
+-- Tests for the triggers
+INSERT INTO RegistrationStatus VALUES ('1111111111', 'CCC111'); -- should register
+INSERT INTO RegistrationStatus VALUES ('5555555555', 'CCC222'); -- should be waiting
+INSERT INTO RegistrationStatus VALUES ('3333333333', 'CCC222'); -- should be waiting
+INSERT INTO RegistrationStatus VALUES ('5555555555', 'CCC333'); -- should register
+INSERT INTO RegistrationStatus VALUES ('3333333333', 'CCC333'); -- should be waiting
+INSERT INTO RegistrationStatus VALUES ('4444444444', 'CCC444'); -- should register
+
+-- Tests for the triggers uncomment to try
+--INSERT INTO RegistrationStatus VALUES ('4444444444', 'CCC111'); -- should fail already passed
+--INSERT INTO RegistrationStatus VALUES ('1111111111', 'CCC111'); -- should fail already registered
+--INSERT INTO RegistrationStatus VALUES ('5555555555', 'CCC222'); -- should fail already waiting
+--INSERT INTO RegistrationStatus VALUES ('5555555555', 'CCC444'); -- should fail doesnt have the prerequisites
+--INSERT INTO RegistrationStatus VALUES ('2222222222', 'CCC444'); -- should fail doesnt have the prerequisites
+
+DELETE FROM RegistrationStatus WHERE student = '1111111111' AND course = 'CCC111'; -- should unregister, no one on waiting list
+DELETE FROM RegistrationStatus WHERE student = '1111111111' AND course = 'CCC222'; -- should unregister, course still overfilled
+DELETE FROM RegistrationStatus WHERE student = '3333333333' AND course = 'CCC222'; -- should unregister from waiting list
+DELETE FROM RegistrationStatus WHERE student = '2222222222' AND course = 'CCC222'; -- should unregister, student 555.. should be registered
+INSERT INTO RegistrationStatus VALUES ('2222222222', 'CCC111'); -- should register
