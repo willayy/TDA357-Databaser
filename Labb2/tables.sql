@@ -123,3 +123,12 @@ CREATE TABLE WaitingList (
 	FOREIGN KEY (course) REFERENCES LimitedCourses(code) ON DELETE CASCADE ON UPDATE CASCADE,
 	PRIMARY KEY (student, course)
 );
+
+CREATE TABLE CoursePrerequisites (
+	course TEXT NOT NULL,
+	prerequisite TEXT NOT NULL,
+	CHECK (course != prerequisite),
+	FOREIGN KEY (course) REFERENCES Courses(code) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (prerequisite) REFERENCES Courses(code) ON DELETE CASCADE ON UPDATE CASCADE,
+	PRIMARY KEY (course, prerequisite)
+);

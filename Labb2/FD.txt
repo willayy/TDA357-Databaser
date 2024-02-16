@@ -39,10 +39,11 @@ R3(-studentIdnr-, studentName, login, programName, branchName)
 R4(-studentIdnr-, -courseCode-, grade, position)
 
 # Here we only have (studentIdnr, classification, courseCode) left in the 
-# domain and we realise these are MVD’s so we decompose into 4NF
+# domain and we realise these are three MVD’s so we decompose into 4NF
 # The relations used are "Classified relation" "Registered relation"
 
 R5(-courseCode-, -classification-)
 
 R6(-studentIdnr-, -courseCode-)
 
+# Ther is also the case with "Prerequisites" relation which is self referencing

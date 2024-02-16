@@ -53,3 +53,7 @@ Taken(-student-, -course-, grade)
 WaitingList(-course-, -student-, position)
     student → Students.idnr
     course → LimitedCourses.code
+
+Prerequisites(-course-, -prerequisite-)
+    course → Courses.code
+    prerequisite → Courses.code
