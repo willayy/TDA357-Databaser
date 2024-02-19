@@ -18,13 +18,13 @@ CREATE FUNCTION try_register() RETURNS TRIGGER AS $try_register$
                 AND Registrations.status = 'registered'
             ) THEN 
                 RAISE EXCEPTION 'Student cant register for a course they are already registered for';
-
-            WHEN EXISTS( -- Check if student is already passed the course
-                SELECT * FROM StudentPassedCourses
-                WHERE StudentPassedCourses.idnr = NEW.student 
-                AND StudentPassedCourses.course = NEW.course
-            ) THEN 
-                RAISE EXCEPTION 'Student cant register for a course they have already passed';
+            
+            WHEN EXISTS(
+                SELECT * from StudentPassedCourses
+                WHERE StudentPassedCourses.idnr = NEW.student
+                AND StudentPassedCourses.Course = NEW.course
+            ) THEN
+                RAISE EXCEPTION 'Student has already passed this course'; 
 
             WHEN EXISTS ( -- Check if student is qualified for the course
                 SELECT prerequisite FROM AllCoursesPrerequisites WHERE AllCoursesPrerequisites.code = NEW.course
