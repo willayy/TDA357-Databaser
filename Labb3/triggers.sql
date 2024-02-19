@@ -59,7 +59,7 @@ CREATE FUNCTION unregister() RETURNS TRIGGER AS $unregister$
                 AND Registrations.course = OLD.course
                 AND Registrations.status = 'waiting'
             ) THEN 
-                DELETE FROM WaitingList WHERE WaitingList.student = NEW.student AND WaitingList.course = OLD.course;
+                DELETE FROM WaitingList WHERE WaitingList.student = OLD.student AND WaitingList.course = OLD.course;
                 UPDATE WaitingList SET position = position - 1 WHERE WaitingList.course = OLD.course 
                 AND WaitingList.position > (SELECT position FROM WaitingList WHERE WaitingList.course = OLD.course);
                 RAISE NOTICE 'Student: % unregistered from waiting list for course: %', OLD.student, OLD.course;
