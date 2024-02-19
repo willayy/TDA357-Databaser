@@ -4,18 +4,18 @@ CREATE FUNCTION try_register() RETURNS TRIGGER AS $try_register$
     BEGIN
         CASE
             WHEN EXISTS( -- Check if student is already is on waiting list
-                SELECT * FROM RegistrationStatus
-                WHERE RegistrationStatus.student = NEW.student 
-                AND RegistrationStatus.course = NEW.course
-                AND RegistrationStatus.status = 'waiting'
+                SELECT * FROM Registrations
+                WHERE Registrations.student = NEW.student 
+                AND Registrations.course = NEW.course
+                AND Registrations.status = 'waiting'
             ) THEN 
                 RAISE EXCEPTION 'Student cant register for a course they are on the waiting list for';
 
             WHEN EXISTS( -- Check if student is already registered
-                SELECT * FROM RegistrationStatus
-                WHERE RegistrationStatus.student = NEW.student 
-                AND RegistrationStatus.course = NEW.course
-                AND RegistrationStatus.status = 'registered'
+                SELECT * FROM Registrations
+                WHERE Registrations.student = NEW.student 
+                AND Registrations.course = NEW.course
+                AND Registrations.status = 'registered'
             ) THEN 
                 RAISE EXCEPTION 'Student cant register for a course they are already registered for';
 
@@ -54,10 +54,10 @@ CREATE FUNCTION unregister() RETURNS TRIGGER AS $unregister$
     BEGIN
         CASE
             WHEN EXISTS( -- Check if student is on waiting list
-                SELECT * FROM RegistrationStatus
-                WHERE RegistrationStatus.student = OLD.student 
-                AND RegistrationStatus.course = OLD.course
-                AND RegistrationStatus.status = 'waiting'
+                SELECT * FROM Registrations
+                WHERE Registrations.student = OLD.student 
+                AND Registrations.course = OLD.course
+                AND Registrations.status = 'waiting'
             ) THEN 
                 DELETE FROM WaitingList WHERE WaitingList.student = OLD.student AND WaitingList.course = OLD.course;
                 UPDATE WaitingList SET position = position - 1 WHERE WaitingList.course = OLD.course 
@@ -65,10 +65,10 @@ CREATE FUNCTION unregister() RETURNS TRIGGER AS $unregister$
                 RAISE NOTICE 'Student: % unregistered from waiting list for course: %', OLD.student, OLD.course;
 
             WHEN EXISTS( -- Check if student is registered
-                SELECT * FROM RegistrationStatus
-                WHERE RegistrationStatus.student = OLD.student 
-                AND RegistrationStatus.course = OLD.course
-                AND (RegistrationStatus.status = 'registered')
+                SELECT * FROM Registrations
+                WHERE Registrations.student = OLD.student 
+                AND Registrations.course = OLD.course
+                AND (Registrations.status = 'registered')
             ) THEN 
                 DELETE FROM Registered WHERE Registered.student = OLD.student AND Registered.course = OLD.course;
                 RAISE NOTICE 'Student: % unregistered from course: %', OLD.student, OLD.course;
@@ -98,9 +98,9 @@ CREATE FUNCTION unregister() RETURNS TRIGGER AS $unregister$
     END;
 $unregister$ LANGUAGE plpgsql;
 
-CREATE TRIGGER unregister INSTEAD OF DELETE ON RegistrationStatus
+CREATE TRIGGER unregister INSTEAD OF DELETE ON Registrations
     FOR EACH ROW EXECUTE FUNCTION unregister();
 
-CREATE TRIGGER try_register INSTEAD OF INSERT ON RegistrationStatus
+CREATE TRIGGER try_register INSTEAD OF INSERT ON Registrations
     FOR EACH ROW EXECUTE FUNCTION try_register();
 

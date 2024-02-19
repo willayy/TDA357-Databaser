@@ -11,7 +11,7 @@ CREATE VIEW FinishedCourses AS (
 );
 
 -- Students that are registered or waiting for a course
-CREATE VIEW RegistrationStatus AS (
+CREATE VIEW Registrations AS (
 	SELECT Registered.student, Registered.course, 'registered' AS status FROM Registered
 	UNION
 	SELECT WaitingList.student, WaitingList.course, 'waiting' AS status FROM WaitingList
