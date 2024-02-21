@@ -30,7 +30,7 @@
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
         <version>42.5.1</version>
-        <scope>runtime</scope>
+        <scope>src</scope>
     </dependency>
   </dependencies>
 
