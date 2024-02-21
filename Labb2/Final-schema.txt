@@ -1,11 +1,13 @@
 # -name- means its a primary key.
 
 Programs(-name-, abbreviation)
+    unique(abbreviation)
 
 Students(-idnr-, name, login, program)
     program -> Programs.name
 
 Departments(-name-, abbreviation)
+    unique(abbreviation)
 
 Classifications(-name-)
 
