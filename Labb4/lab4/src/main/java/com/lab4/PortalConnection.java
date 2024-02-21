@@ -1,4 +1,4 @@
-
+package com.lab4;
 import java.sql.*; // JDBC stuff.
 import java.util.Properties;
 
