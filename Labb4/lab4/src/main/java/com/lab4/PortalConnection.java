@@ -27,29 +27,44 @@ public class PortalConnection {
 
     // Initializes the connection, no need to change anything here
     public PortalConnection(String db, String user, String pwd) throws SQLException, ClassNotFoundException {
-        Class.forName("org.postgresql.Driver");
-        Properties props = new Properties();
-        props.setProperty("user", user);
-        props.setProperty("password", pwd);
-        conn = DriverManager.getConnection(db, props);
+      Class.forName("org.postgresql.Driver");
+      Properties props = new Properties();
+      props.setProperty("user", user);
+      props.setProperty("password", pwd);
+      conn = DriverManager.getConnection(db, props);
     }
-
 
     // Register a student on a course, returns a tiny JSON document (as a String)
     public String register(String student, String courseCode){
       
-      // placeholder, remove along with this comment. 
-      return "{\"success\":false, \"error\":\"Registration is not implemented yet :(\"}";
+      String query = "INSERT INTO Registrations VALUES (?, ?)";
       
-      // Here's a bit of useful code, use it or delete it 
-      // } catch (SQLException e) {
-      //    return "{\"success\":false, \"error\":\""+getError(e)+"\"}";
-      // }     
+      try (PreparedStatement ps = conn.prepareStatement(query)) {
+        ps.setString(1, student);
+        ps.setString(2, courseCode);
+        ResultSet rs = ps.executeQuery();
+        System.out.println("Student" + student + "registered for " + courseCode);
+        return rs.getString("jsondata");
+      } catch (SQLException e) {
+        return "{\"success\":false, \"error\":\""+getError(e)+"\"}";
+      }  
     }
 
     // Unregister a student from a course, returns a tiny JSON document (as a String)
     public String unregister(String student, String courseCode){
-      return "{\"success\":false, \"error\":\"Unregistration is not implemented yet :(\"}";
+
+      String query = "DELETE FROM Registrations WHERE student=? AND course=?";
+
+      try (PreparedStatement ps = conn.prepareStatement(query)) {
+        ps.setString(1, student);
+        ps.setString(2, courseCode);
+        ResultSet rs = ps.executeQuery();
+        System.out.println("Student" + student + "unregistered for " + courseCode);
+        return rs.getString("jsondata");
+      } catch (SQLException e) {
+        return "{\"success\":false, \"error\":\""+getError(e)+"\"}";
+      }
+
     }
 
     // Return a JSON document containing lots of information about a student, it should validate against the schema found in information_schema.json

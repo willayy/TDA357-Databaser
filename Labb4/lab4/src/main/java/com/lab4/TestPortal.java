@@ -25,9 +25,6 @@ public class TestPortal {
 
          prettyPrint(c.getInfo("2222222222"));
 
-
-
-      
       } catch (ClassNotFoundException e) {
          System.err.println("ERROR!\nYou do not have the Postgres JDBC driver (e.g. postgresql-42.5.1.jar) in your runtime classpath!");
       } catch (Exception e) {
