@@ -29,6 +29,7 @@ public class TestPortal {
          System.err.println("ERROR!\nYou do not have the Postgres JDBC driver (e.g. postgresql-42.5.1.jar) in your runtime classpath!");
       } catch (Exception e) {
          e.printStackTrace();
+      
       }
    }
    

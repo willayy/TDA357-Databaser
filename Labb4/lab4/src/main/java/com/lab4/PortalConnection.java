@@ -37,14 +37,14 @@ public class PortalConnection {
     // Register a student on a course, returns a tiny JSON document (as a String)
     public String register(String student, String courseCode){
       
-      String query = "INSERT INTO Registrations VALUES (?, ?)";
+      String query = "INSERT INTO Registrations VALUES(?,?)";
       
       try (PreparedStatement ps = conn.prepareStatement(query)) {
         ps.setString(1, student);
         ps.setString(2, courseCode);
-        ResultSet rs = ps.executeQuery();
+        ps.executeUpdate();
         System.out.println("Student" + student + "registered for " + courseCode);
-        return rs.getString("jsondata");
+        return "Student " + student + " registered for " + courseCode;
       } catch (SQLException e) {
         return "{\"success\":false, \"error\":\""+getError(e)+"\"}";
       }  
@@ -58,9 +58,8 @@ public class PortalConnection {
       try (PreparedStatement ps = conn.prepareStatement(query)) {
         ps.setString(1, student);
         ps.setString(2, courseCode);
-        ResultSet rs = ps.executeQuery();
-        System.out.println("Student" + student + "unregistered for " + courseCode);
-        return rs.getString("jsondata");
+        ps.executeUpdate();
+        return "Student " + student + " unregistered for " + courseCode;
       } catch (SQLException e) {
         return "{\"success\":false, \"error\":\""+getError(e)+"\"}";
       }
