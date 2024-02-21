@@ -1,4 +1,4 @@
-Students(-idnr-, name, login)
+Students(-idnr-, name, login, program)
 
 Programs(-name-, abbreviation)
 
@@ -9,10 +9,6 @@ Classifications(-name-)
 PartOf(-program-, department)
 	program → Programs.name
 	department → Departments.name
-
-EnrolledInProgram(-student-, program)
-	student → Students.idnr
-	program → Programs.name
 
 Branch(-name-, -program-)
 	program → Programs.name
@@ -51,7 +47,7 @@ Taken(-student-, -course-, grade)
     student → Students.idnr
     course → Courses.code
 
-WaitingList(-student-, course, position)
+WaitingList(-student-, -course-, position)
     student → Students.idnr
     course → LimitedCourses.code
 

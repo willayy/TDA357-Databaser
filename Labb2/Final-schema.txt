@@ -18,6 +18,7 @@ Branch(-name-, -program-)
 
 StudentBranches(-student-, branch, program)
     student → Students.idnr
+    (student, program) → Students.(idnr, program)
     (branch, program) → Branches.(name, program)
 
 Courses(-code-, name, credits, department)
@@ -53,6 +54,7 @@ Taken(-student-, -course-, grade)
 WaitingList(-course-, -student-, position)
     student → Students.idnr
     course → LimitedCourses.code
+    unique(course, position)
 
 Prerequisites(-course-, -prerequisite-)
     course → Courses.code
