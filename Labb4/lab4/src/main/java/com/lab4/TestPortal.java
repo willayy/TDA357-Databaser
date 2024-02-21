@@ -35,8 +35,6 @@ public class TestPortal {
       }
    }
    
-   
-   
    public static void pause() throws Exception{
      System.out.println("PRESS ENTER");
      while(System.in.read() != '\n');
