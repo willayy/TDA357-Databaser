@@ -5,6 +5,7 @@ Programs(-name-, abbreviation)
 
 Students(-idnr-, name, login, program)
     program -> Programs.name
+    unique(login)
 
 Departments(-name-, abbreviation)
     unique(abbreviation)
