@@ -21,7 +21,7 @@ CREATE TABLE Branches (
 CREATE TABLE Students (
 	idnr TEXT PRIMARY KEY CHECK (idnr LIKE '__________'),
 	name TEXT NOT NULL,
-	login TEXT NOT NULL,
+	login TEXT NOT NULL UNIQUE,
     program TEXT NOT NULL,
 	FOREIGN KEY (program) REFERENCES Programs(name) ON DELETE CASCADE ON UPDATE CASCADE
 );
