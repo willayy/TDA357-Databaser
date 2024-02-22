@@ -1,5 +1,6 @@
 Students(-idnr-, name, login, program)
     unique(login)
+    unique(idnr, program)
 
 Programs(-name-, abbreviation)
     unique(abbreviation)

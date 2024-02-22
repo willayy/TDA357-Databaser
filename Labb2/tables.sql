@@ -22,6 +22,7 @@ CREATE TABLE Students (
 	idnr TEXT PRIMARY KEY CHECK (idnr LIKE '__________'),
 	name TEXT NOT NULL,
 	login TEXT NOT NULL UNIQUE,
+	UNIQUE(idnr, program),
     program TEXT NOT NULL,
 	FOREIGN KEY (program) REFERENCES Programs(name) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -54,8 +55,8 @@ CREATE TABLE StudentBranches (
 	program TEXT NOT NULL,
 	FOREIGN KEY (student) REFERENCES Students(idnr) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (program) REFERENCES Programs(name) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (student, program) REFERENCES Students(student, program) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (branch, program) REFERENCES Branches(name, program) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (student, program) REFERENCES Students(idnr, program) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (branch, program) REFERENCES Branches(name, program) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Classifications (
