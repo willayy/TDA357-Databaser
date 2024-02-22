@@ -1,12 +1,9 @@
 Students(-idnr-, name, login, program)
-    unique(login)
-    unique(idnr, program)
+    program → Programs.name
 
 Programs(-name-, abbreviation)
-    unique(abbreviation)
 
 Departments(-name-, abbreviation)
-    unique(abbreviation)
 
 Classifications(-name-)
 
@@ -53,7 +50,6 @@ Taken(-student-, -course-, grade)
 
 WaitingList(-student-, -course-, position)
     student → Students.idnr
-    unique(course, position)
     course → LimitedCourses.code
 
 Prerequisites(-course-, -prerequisite-)
