@@ -43,7 +43,7 @@ public class PortalConnection {
         ps.setString(1, student);
         ps.setString(2, courseCode);
         ps.executeUpdate();
-        return "Student " + student + " registered for " + courseCode;
+        return "{\"success\":true}";
       } catch (SQLException e) {
         return "{\"success\":false, \"error\":\""+getError(e)+"\"}";
       }  
@@ -57,12 +57,13 @@ public class PortalConnection {
       try (PreparedStatement ps = conn.prepareStatement(query)) {
         ps.setString(1, student);
         ps.setString(2, courseCode);
-        ps.executeUpdate();
-        return "Student " + student + " unregistered for " + courseCode;
+        int affectedRows = ps.executeUpdate();
+        if(affectedRows == 0)
+          throw new SQLException("No student with idnr "+student+" is registered on course "+courseCode);
+        return "{\"success\":true}";
       } catch (SQLException e) {
         return "{\"success\":false, \"error\":\""+getError(e)+"\"}";
       }
-
     }
 
     // Return a JSON document containing lots of information about a student, it should validate against the schema found in information_schema.json
@@ -70,7 +71,35 @@ public class PortalConnection {
         
         try(PreparedStatement st = conn.prepareStatement(
             // replace this with something more useful
-            "SELECT jsonb_build_object('student',idnr,'name',name) AS jsondata FROM BasicInformation WHERE idnr=?"
+            """
+            SELECT jsonb_build_object(
+            'student', BasicInformation.idnr,
+            'name', BasicInformation.name,
+            'login', BasicInformation.login,
+            'program', BasicInformation.program,
+            'branch', COALESCE(BasicInformation.branch, 'NULL'),
+            'finished', (SELECT jsonb_agg(jsonb_build_object(
+              'course', FinishedCourses.courseName,
+              'code', FinishedCourses.course,
+              'credits', FinishedCourses.credits,
+              'grade', FinishedCourses.grade)
+            ) FROM FinishedCourses WHERE FinishedCourses.student = BasicInformation.idnr),
+            'registered', (SELECT jsonb_agg(jsonb_build_object(
+              'code', Registrations.course,
+              'course', Courses.name,
+              'status', Registrations.status)
+            ) FROM Registrations, Courses WHERE Registrations.student = BasicInformation.idnr AND Courses.code = Registrations.course),
+            'seminarCourses', PathToGraduation.seminarCourses,
+            'mathCredits', PathToGraduation.mathCredits,
+            'totalCredits', PathToGraduation.totalCredits,
+            'qualified', PathToGraduation.qualified
+            ) 
+            AS jsondata 
+            FROM BasicInformation
+            JOIN PathToGraduation ON idnr = PathToGraduation.student
+            WHERE BasicInformation.idnr = ?
+            GROUP BY idnr, BasicInformation.name, login, program, branch, seminarCourses, mathCredits, totalCredits, qualified;
+            """
             );){
             
             st.setString(1, student);

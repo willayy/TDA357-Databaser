@@ -10,20 +10,79 @@ public class TestPortal {
    public static void main(String[] args) {
       try{
          PortalConnection c = new PortalConnection();
-   
+         
+         // TO RESET THE DATABASE
+         // psql -U williamnorland "Labb 4"
+         // \i TDA357-Databaser/Labb4/lab4/resources/resetState.sql
+
          // Write your tests here. Add/remove calls to pause() as desired. 
          // Use println instead of prettyPrint to get more compact output (if your raw JSON is already readable)
-   
-         System.out.println(c.unregister("2222222222", "CCC333")); 
+         prettyPrint(c.getInfo("2222222222")); 
+         pause();
+
+         // Should work
+         System.out.println(c.register("2222222222", "CCC111")); 
          pause();
 
          prettyPrint(c.getInfo("2222222222")); 
          pause();
+         
+         // Should give error already registered
+         System.out.println(c.register("2222222222", "CCC111")); 
+         pause();
 
-         System.out.println(c.register("2222222222", "CCC333")); 
+         // Should work
+         System.out.println(c.unregister("2222222222", "CCC111"));
          pause();
 
          prettyPrint(c.getInfo("2222222222"));
+         pause();
+
+         // Should give error already unregistered
+         System.out.println(c.unregister("2222222222", "CCC111"));
+         pause();
+
+         // Should give error does not have prerequisites
+         System.out.println(c.register("2222222222", "CCC444"));
+         pause();
+
+         // Should work check that 2222222222 is registered
+         System.out.println(c.register("2222222222", "CCC333"));
+         System.out.println(c.register("1111111111", "CCC333"));
+         System.out.println(c.register("3333333333", "CCC333"));
+         prettyPrint(c.getInfo("2222222222"));
+         pause();         
+
+         // Should work check that 2222222222 is unregistered
+         System.out.println(c.unregister("2222222222", "CCC333"));
+         prettyPrint(c.getInfo("2222222222"));
+         pause();
+
+         // Should work check that 1111111111 is registered
+         prettyPrint(c.getInfo("1111111111"));
+         pause();
+
+         // Should work check that 2222222222 is waiting at last position in queue
+         System.out.println(c.register("2222222222", "CCC333"));
+         prettyPrint(c.getInfo("2222222222"));
+         pause();
+
+         // Should work check that 2222222222 is unregistered
+         System.out.println(c.unregister("2222222222", "CCC333"));
+         prettyPrint(c.getInfo("2222222222"));
+         pause();
+
+         // Should work check that 2222222222 is registered, check position is still last
+         System.out.println(c.register("2222222222", "CCC333"));
+         prettyPrint(c.getInfo("2222222222"));
+         pause();
+
+         // Should work check that 333... is still waiting even though 111... is unregistered
+         System.out.println(c.register("3333333333", "CCC222"));
+         System.out.println(c.unregister("1111111111", "CCC222"));
+         prettyPrint(c.getInfo("3333333333"));
+         pause();
+
 
       } catch (ClassNotFoundException e) {
          System.err.println("ERROR!\nYou do not have the Postgres JDBC driver (e.g. postgresql-42.5.1.jar) in your runtime classpath!");
