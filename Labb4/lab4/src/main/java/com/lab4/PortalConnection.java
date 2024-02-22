@@ -43,7 +43,6 @@ public class PortalConnection {
         ps.setString(1, student);
         ps.setString(2, courseCode);
         ps.executeUpdate();
-        System.out.println("Student" + student + "registered for " + courseCode);
         return "Student " + student + " registered for " + courseCode;
       } catch (SQLException e) {
         return "{\"success\":false, \"error\":\""+getError(e)+"\"}";

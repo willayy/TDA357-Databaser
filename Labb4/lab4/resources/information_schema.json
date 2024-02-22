@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Student iformation",
+  "type": "object",
+  "required": [
+    "student",
+    "name",
+    "login",
+    "program",
+    "branch",
+    "finished",
+    "registered",
+    "seminarCourses",
+    "mathCredits",
+    "totalCredits",
+    "canGraduate"
+  ],
+  "properties": {
+    "student": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 10,
+      "title": "A national identification number, 10 digits"
+    },
+    "name": {
+      "type": "string",
+      "title": "The name of the student"
+    },
+    "login": {
+      "type": "string",
+      "title": "The univerity issued computer login"
+    },
+    "program": {
+      "type": "string"
+    },
+    "branch": {
+      "anyOf":[{"type": "string"},{"type": "null"}]
+    },
+    "finished": {
+      "type": "array",
+      "title": "A list of read courses",
+      "items": {
+        "type": "object",
+        "required": [
+          "course",
+          "code",
+          "credits",
+          "grade"
+        ],
+        "properties": {
+          "course": {
+            "type": "string",
+            "title": "Course name"
+          },
+          "code": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 6,
+            "title": "Course code"
+          },
+          "credits": {
+            "type": "number",
+            "title": "Academic credits"
+          },
+          "grade": {
+            "enum" : ["U", "3", "4", "5"]
+          }
+        }
+      }
+    },
+    "registered": {
+      "type": "array",
+      "title": "Registered and waiting courses",
+      "items": {
+        "type": "object",
+        "required": [
+          "course",
+          "code",
+          "status"
+        ],
+        "properties": {
+          "course": {
+            "type": "string",
+            "title": "Course name"
+          },
+          "code": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 6,
+            "title": "Course code"
+          },
+          "status": {
+            "enum" : ["registered", "waiting"],          
+            "title": "Registration status"
+          },
+          "position": {
+            "anyOf":[{"type": "number"},{"type": "null"}],         
+            "title": "Waiting list position"
+          }
+        }
+      }
+    },
+    "seminarCourses": {
+      "type": "integer",
+      "title": "Number of passed seminar courses"
+    },
+    "mathCredits": {
+      "type": "number",
+      "title": "Total passed math credits"
+    },
+    "totalCredits": {
+      "type": "number",
+      "title": "Total passed credits"
+    },
+    "canGraduate": {
+      "type": "boolean",
+      "title": "Qualified for graduation"
+    }
+  }
+}
