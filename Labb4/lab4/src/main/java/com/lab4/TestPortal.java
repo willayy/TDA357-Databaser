@@ -18,13 +18,12 @@ public class TestPortal {
 
          // Write your tests here. Add/remove calls to pause() as desired. 
          // Use println instead of prettyPrint to get more compact output (if your raw JSON is already readable)
+         
          prettyPrint(c.getInfo("2222222222")); 
          pause();
 
          // Should work
          System.out.println(c.register("2222222222", "CCC111")); 
-
-         System.out.println(c.unregister("2222222222", "CCC333")); 
          pause();
 
          prettyPrint(c.getInfo("2222222222")); 
@@ -42,8 +41,7 @@ public class TestPortal {
          pause();
 
          // Should give error already unregistered
-         System.out.println(c.unregister("2222222222", "CCC111"));
-         System.out.println(c.register("2222222222", "CCC333")); 
+         System.out.println(c.unregister("2222222222", "CCC111")); 
          pause();
 
          // Should give error does not have prerequisites
