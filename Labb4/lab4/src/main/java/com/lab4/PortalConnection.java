@@ -79,16 +79,20 @@ public class PortalConnection {
             'program', BasicInformation.program,
             'branch', COALESCE(BasicInformation.branch, 'NULL'),
             'finished', (SELECT jsonb_agg(jsonb_build_object(
-              'course', FinishedCourses.courseName,
-              'code', FinishedCourses.course,
-              'credits', FinishedCourses.credits,
-              'grade', FinishedCourses.grade)
+                'course', FinishedCourses.courseName,
+                'code', FinishedCourses.course,
+                'credits', FinishedCourses.credits,
+                'grade', FinishedCourses.grade)
             ) FROM FinishedCourses WHERE FinishedCourses.student = BasicInformation.idnr),
             'registered', (SELECT jsonb_agg(jsonb_build_object(
-              'code', Registrations.course,
-              'course', Courses.name,
-              'status', Registrations.status)
-            ) FROM Registrations, Courses WHERE Registrations.student = BasicInformation.idnr AND Courses.code = Registrations.course),
+                'code', Registrations.course,
+                'course', Courses.name,
+                'status', Registrations.status,
+                'position', WaitingList.position)
+            ) FROM Registrations
+              JOIN Courses ON Courses.code = Registrations.course
+              LEFT JOIN WaitingList ON WaitingList.student = Registrations.student AND WaitingList.course = Registrations.course
+              WHERE Registrations.student = BasicInformation.idnr),
             'seminarCourses', PathToGraduation.seminarCourses,
             'mathCredits', PathToGraduation.mathCredits,
             'totalCredits', PathToGraduation.totalCredits,
