@@ -1,7 +1,6 @@
 # -name- means its a primary key.
 
 Programs(-name-, abbreviation)
-    unique(abbreviation)
 
 Students(-idnr-, name, login, program)
     program -> Programs.name
@@ -13,7 +12,7 @@ Departments(-name-, abbreviation)
 
 Classifications(-name-)
 
-PartOf(-program-, department)
+PartOf(-program-, -department-)
 	program → Programs.name
 	department → Departments.name
 
@@ -21,7 +20,6 @@ Branch(-name-, -program-)
 	program → Programs.name
 
 StudentBranches(-student-, branch, program)
-    student → Students.idnr
     (student, program) → Students.(idnr, program)
     (branch, program) → Branches.(name, program)
 
