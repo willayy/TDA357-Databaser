@@ -7,7 +7,7 @@ Departments(-name-, abbreviation)
 
 Classifications(-name-)
 
-PartOf(-program-, department)
+PartOf(-program-, -department-)
 	program → Programs.name
 	department → Departments.name
 
