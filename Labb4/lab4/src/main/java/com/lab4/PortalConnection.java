@@ -52,11 +52,11 @@ public class PortalConnection {
     // Unregister a student from a course, returns a tiny JSON document (as a String)
     public String unregister(String student, String courseCode){
 
-      String query = "DELETE FROM Registrations WHERE student=? AND course=?";
+      String query = "DELETE FROM Registrations WHERE student='"+student+"' AND course='"+courseCode+"'";
 
       try (PreparedStatement ps = conn.prepareStatement(query)) {
-        ps.setString(1, student);
-        ps.setString(2, courseCode);
+        //ps.setString(1, student);
+        //ps.setString(2, courseCode);
         int affectedRows = ps.executeUpdate();
         if(affectedRows == 0)
           throw new SQLException("No student with idnr "+student+" is registered on course "+courseCode);
