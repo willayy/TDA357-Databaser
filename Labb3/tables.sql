@@ -3,7 +3,7 @@
 
 CREATE TABLE Programs (
     name TEXT PRIMARY KEY,
-    abbreviation TEXT NOT NULL UNIQUE
+    abbreviation TEXT NOT NULL
 );
 
 CREATE TABLE Departments (
@@ -53,8 +53,6 @@ CREATE TABLE StudentBranches (
 	student TEXT PRIMARY KEY,
     branch TEXT NOT NULL,
 	program TEXT NOT NULL,
-	FOREIGN KEY (student) REFERENCES Students(idnr) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (program) REFERENCES Programs(name) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (student, program) REFERENCES Students(idnr, program) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (branch, program) REFERENCES Branches(name, program) ON DELETE CASCADE ON UPDATE CASCADE
 );
