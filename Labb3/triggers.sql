@@ -51,6 +51,7 @@ CREATE FUNCTION try_register() RETURNS TRIGGER AS $try_register$
 $try_register$ LANGUAGE plpgsql;
 
 CREATE FUNCTION unregister() RETURNS TRIGGER AS $unregister$
+	DECLARE old_pos INTEGER;
     BEGIN
         CASE
             WHEN EXISTS( -- Check if student is on waiting list
@@ -59,9 +60,9 @@ CREATE FUNCTION unregister() RETURNS TRIGGER AS $unregister$
                 AND Registrations.course = OLD.course
                 AND Registrations.status = 'waiting'
             ) THEN 
+                old_pos	:= (SELECT position FROM WaitingList WHERE WaitingList.student = OLD.student AND WaitingList.course = OLD.course);
                 DELETE FROM WaitingList WHERE WaitingList.student = OLD.student AND WaitingList.course = OLD.course;
-                UPDATE WaitingList SET position = position - 1 WHERE WaitingList.course = OLD.course 
-                AND WaitingList.position > (SELECT position FROM WaitingList WHERE WaitingList.course = OLD.course AND WaitingList.position > 1 );
+                UPDATE WaitingList SET position = position - 1 WHERE WaitingList.course = OLD.course AND WaitingList.position > old_pos;
                 RAISE NOTICE 'Student: % unregistered from waiting list for course: %', OLD.student, OLD.course;
 
             WHEN EXISTS( -- Check if student is registered
@@ -103,4 +104,3 @@ CREATE TRIGGER unregister INSTEAD OF DELETE ON Registrations
 
 CREATE TRIGGER try_register INSTEAD OF INSERT ON Registrations
     FOR EACH ROW EXECUTE FUNCTION try_register();
-
