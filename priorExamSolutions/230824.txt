@@ -1,0 +1,38 @@
+1. SQL Constrainst sand Views
+
+Relational Schema
+
+    Person(-personal_nr-, name, tel, email)
+        unqiue(tel)
+        unique(email)
+    Organisation(-org_nr-, name, address, director, value)
+       director -> Person.personal_nr
+       unique(director)
+    Loan(-id-, client, type, amount, binding, bdate, interest)
+       client -> Person.personal_nr
+    
+CREATE TABLE Persons (
+    personal_nr TEXT PRIMARY KEY
+    CHECK(personal_nr LIKE "P__________") //No info on constraints for this from DS but i think this is reasonable
+    name TEXT NOT NULL
+    tel TEXT NOT NULL UNIQUE //Not required by DS but i think its good for safety reasons
+    email TEXT NOT NULL UNIQUE //Same for this
+)
+
+CREATE TABLE Organisations (
+    org_nr TEXT PRIMARY KEY
+    CHECK(org_nr LIKE "O__________")
+    name TEXT NOT NULL
+    address TEXT NOT NULL //Could be unqiue but would make it though for companies in the same building
+    director TEXT NOT NULL UNIQUE
+    FOREGIN KEY (director) REFERENCES Persons(personal_nr)
+    value INT NOT NULL //Should not be strictly posetive! Think of companies with excessive debts.
+)
+
+CREATE TABLE Loans(
+    client TEXT NOT NULL
+    FOREIGN KEY (client) REFERENCES Persons(personal_nr)
+    id TEXT PRIMARY KEY
+    CHECK(id LIKE CONCAT("L",client,"__________"))
+
+)

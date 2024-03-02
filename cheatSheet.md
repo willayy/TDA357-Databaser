@@ -25,6 +25,8 @@
             THEN
     END CASE
 
+    If SUM() or COUNT() is used, GROUP BY is required.
+
 ### ER diagram syntax
 * #### Many-to-many relationships:
     "Students are registered to many courses" <br>
@@ -54,10 +56,51 @@
     Additional attribute relevant to ISA relationship is stored in another entity.
 
 
-### Relational algebra syntax
 ### JSON syntax
-### Functional dependencies
-    Definition:
-#### BCNF
-### Multivalued dependencies
+Best described with an example:
 
+    {
+        "title" : "JSON object title",
+        "type" : "object",
+        "required" : [
+            "Property1",
+            "Property2",
+            "Property3"
+        ]
+        "properties" : {
+            "Property1" : {
+                "type": "string",
+                "minLength": 10,
+                "maxLength": 10,
+                "title": "title1"
+            },
+            "Property2" : {
+                "anyOf":[{"type": "string"},{"type": "null"}],
+            },
+            "Property3" : {
+                "type" : "array",
+                "items" : {
+                    "type" : "object",
+                    "properties" : {
+                        "Property3.1" : {
+                            "type" : "string",
+                        },
+                        "Property3.2" : {
+                            "type" : "string",
+                        },
+                    },
+                },
+            }
+        }
+    }  
+
+### Functional dependencies and Normal forms
+Alternative sometimes complementary (to ER-diagram) way to derive a schema from a domain description. <br>
+
+#### Definition
+
+#### BCNF
+
+##### Multivalued dependencies
+
+### Relational algebra syntax
