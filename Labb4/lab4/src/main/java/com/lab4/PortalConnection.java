@@ -96,7 +96,7 @@ public class PortalConnection {
               'seminarCourses', PathToGraduation.seminarCourses,
               'mathCredits', PathToGraduation.mathCredits,
               'totalCredits', PathToGraduation.totalCredits,
-              'qualified', PathToGraduation.qualified
+              'canGraduate', PathToGraduation.qualified
             ) 
             AS jsondata 
             FROM BasicInformation

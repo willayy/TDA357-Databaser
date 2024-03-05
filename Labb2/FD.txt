@@ -28,6 +28,8 @@ BCNF :
 D(studentIdnr,studentName,login,branchName,programName,programAbbreviation,courseCode,
 courseName,credits,departmentName,departmentAbbreviation,capacity,classification,grade,position)
 
+# Broken down into
+
 R0(-departmentName-, departmentAbbreviation)
 
 R1(-programName-, programAbbreviation)
