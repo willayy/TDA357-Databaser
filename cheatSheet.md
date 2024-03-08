@@ -27,6 +27,16 @@
 
     If SUM() or COUNT() is used, GROUP BY is required.
 
+    COALESCE(<expression>, <expression>) //
+
+    CREATE VIEW <name> AS (
+        <query>
+    )
+    
+    WITH <name> AS (
+        <query>
+    )
+
 ### ER diagram syntax
 * #### Many-to-many relationships:
     "Students are registered to many courses" <br>

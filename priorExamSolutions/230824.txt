@@ -71,3 +71,40 @@ CREATE VIEW EndingLoans AS (
 
 1.d
 
+WITH LoanKindIsBoth AS (
+    (SELECT client, 'both' AS kind FROM ActiveLoans
+    WHERE type = 'org')
+        INTERSECT
+    (SELECT client, 'both' AS kind FROM ActiveLoans
+    WHERE type = 'private')
+);
+
+WITH LoanKindIsOnlyPrivate AS (
+    (SELECT client, 'private' AS kind FROM ActiveLoans
+    WHERE type = 'private')
+        EXCEPT
+    (SELECT client, 'private' AS kind FROM LoanKindIsBoth)
+);
+
+WITH LoanKindIsOnlyOrg AS (
+    (SELECT client, 'org' AS kind FROM ActiveLoans
+    WHERE type = 'org')
+        EXCEPT
+    (SELECT client, 'org' AS kind FROM LoanKindIsBoth)
+);
+
+WITH LoanKindIsNone AS (
+    (SELECT personal_nr AS client, 'none' AS kind FROM Persons)
+        EXCEPT 
+    (SELECT client, 'none' FROM ActiveLoans)
+);
+
+SELECT personal_nr, name, kind
+FROM Persons 
+JOIN LoanKindIsNone ON (personal_nr = client)
+JOIN LoanKindIsBoth ON (personal_nr = client)
+JOIN LoanKindIsOnlyOrg ON (personal_nr = client)
+JOIN LoanKindIsOnlyPrivate ON (personal_nr = client)
+ORDER BY personal_nr;
+
+2.a
