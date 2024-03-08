@@ -2,37 +2,72 @@
 
 Relational Schema
 
-    Person(-personal_nr-, name, tel, email)
-        unqiue(tel)
-        unique(email)
-    Organisation(-org_nr-, name, address, director, value)
-       director -> Person.personal_nr
-       unique(director)
-    Loan(-id-, client, type, amount, binding, bdate, interest)
-       client -> Person.personal_nr
-    
+Person(-personal_nr-, name, tel, email)
+    unqiue(tel)
+    unique(email)
+Organisation(-org_nr-, name, address, director, value)
+    director -> Person.personal_nr
+    unique(director)
+Loan(-id-, client, type, amount, binding, bdate, interest)
+    client -> Person.personal_nr
+
+1.a
+
 CREATE TABLE Persons (
     personal_nr TEXT PRIMARY KEY
-    CHECK(personal_nr LIKE "P__________") //No info on constraints for this from DS but i think this is reasonable
+    CHECK(personal_nr LIKE 'P__________') //No info on constraints for this from DS but i think this is reasonable
     name TEXT NOT NULL
     tel TEXT NOT NULL UNIQUE //Not required by DS but i think its good for safety reasons
     email TEXT NOT NULL UNIQUE //Same for this
-)
+);
 
 CREATE TABLE Organisations (
     org_nr TEXT PRIMARY KEY
-    CHECK(org_nr LIKE "O__________")
+    CHECK(org_nr LIKE 'O__________')
     name TEXT NOT NULL
     address TEXT NOT NULL //Could be unqiue but would make it though for companies in the same building
     director TEXT NOT NULL UNIQUE
     FOREGIN KEY (director) REFERENCES Persons(personal_nr)
     value INT NOT NULL //Should not be strictly posetive! Think of companies with excessive debts.
-)
+);
 
-CREATE TABLE Loans(
+CREATE TABLE Loans (
+    id TEXT PRIMARY KEY
+    CHECK(id LIKE CONCAT('L',client,'__________'))
     client TEXT NOT NULL
     FOREIGN KEY (client) REFERENCES Persons(personal_nr)
-    id TEXT PRIMARY KEY
-    CHECK(id LIKE CONCAT("L",client,"__________"))
+    type TEXT NOT NULL
+    CHECK(type IN ('private','org'))
+    amount INT NOT NULL
+    CHECK(amount > 0)
+    binding INT NOT NULL
+    CHECK(binding IN (1,2,3,5))
+    bdate DATE NOT NULL
+    interest FLOAT NOT NULL //Negative rent exists! You could maybe cap this but i dont really se why since super high rent can exist in unstable economies
+);
 
-)
+1.b
+
+CREATE VIEW ActiveLoans AS (
+    SELECT * FROM Loans 
+    WHERE CURRENT_DATE =< Loans.bdate + Loans.binding * 365
+);
+
+1.c
+
+CREATE VIEW EndingLoans AS (
+    WITH AboutToExpire AS (
+        SELECT *, bdate + binding * 365 - CURRENT_DATE as daysToExpire FROM ActiveLoans 
+        WHERE CURRENT_DATE >= (Loans.bdate + Loans.binding * 365) - 30
+    )
+    (SELECT name, email, daysToExpire
+    FROM Persons JOIN AboutToExpire ON personal_nr = client
+    WHERE type = "private")
+    UNION
+    (SELECT name, email, daysToExpire
+    FROM Organisations JOIN AboutToExpire ON director = client
+    WHERE type = "org")
+);
+
+1.d
+
