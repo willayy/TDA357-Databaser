@@ -27,7 +27,7 @@
 
     If SUM() or COUNT() is used, GROUP BY is required.
 
-    COALESCE(<expression>, <expression>) //
+    COALESCE(<expression>, <expression>)
 
     CREATE VIEW <name> AS (
         <query>
@@ -36,6 +36,17 @@
     WITH <name> AS (
         <query>
     )
+
+    SELECT DISTINCT <column> FROM <table>
+
+    BEGIN;
+        <sql>
+    COMMIT;
+
+    Can also be used with ROLLBACK; to undo changes made in the query.
+
+    use HAVING instead of WHERE when using aggregate functions. For example:
+        SELECT name, SUM(salary) FROM employee GROUP BY name HAVING SUM(salary) > 10000;
 
 ### ER diagram syntax
 * #### Many-to-many relationships:
@@ -114,3 +125,32 @@ Alternative sometimes complementary (to ER-diagram) way to derive a schema from 
 ##### Multivalued dependencies
 
 ### Relational algebra syntax
+'table' selects everything from the table <br>
+π means select specific columns from a table <br>
+(σ col1 = 'any' ('table')) is a condition <br>
+
+π col1, col2 (σ col1 = 'any'(table)) <br>
+is equal to select col1, col2 from table where col1 = 'any' <br>
+
+→ is a AS for columns<br>
+ρ is a AS for tables<br>
+
+τ col1 means sort by col1 <br>
+τ- col1 means sort by col1 in descending order <br>
+
+τ col1 (π col1, col2 'table') <br>
+is equal to select col1, col2 from table order by col1 <br>
+
+δ is a distinct operator <br>
+δ (π col1 'table') <br>
+
+⨝ is a join operator <br>
+⨝ OR is a outer right join <br>
+⨝ OL is a outer left join <br>
+
+δ(S ∪ R) is equal to S union R <br>
+δ(S ∩ R) is equal to S intersect R <br>
+δ(S - R) is equal to S except R <br>
+
+γ is used with aggregate functions and group by <br>
+γ col1, SUM(col2) 'table' <br>

@@ -108,3 +108,20 @@ JOIN LoanKindIsOnlyPrivate ON (personal_nr = client)
 ORDER BY personal_nr;
 
 2.a
+
+SELECT DISTINCT org_nr, name FROM Organisations
+JOIN ActiveLoans ON director = client
+WHERE type = 'org' AND (amount >= value * 3)
+ORDER BY org_nr DESC;
+
+τ-org_nr(δ(π org_nr, name (σ type = 'org'∧ amount > value * 3(Organisations ⨝ director = client ActiveLoans))))
+
+2.b
+
+SELECT personal_nr, name, SUM(amount) AS total FROM Persons
+JOIN ActiveLoans ON personal_nr = client
+GROUP BY personal_nr
+HAVING SUM(amount) > 10000000
+ORDER BY total
+
+τ total(δ total > 10000000(γ personal_nr, name, SUM(amount)→total (Persons ⨝ personal_nr = client Persons)))
