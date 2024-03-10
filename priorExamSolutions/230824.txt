@@ -220,6 +220,52 @@ R212(-user-,-message_id-, reaction, reacting_user)
 
 6.a
 
-
+{
+    "type": "array",
+    "items" :
+    {
+        "type" : "object
+        "properties" {
+            "id" : {
+                "type" : "integer"
+            },
+            "status" : {
+                "type" : "string",
+                "status" : {"enum" : ["reported", "active", "resolved"] }
+            },
+            "reportedBy" : {
+                "type": "object"
+                "properties" : {
+                    "name" : {"type" : "string"},
+                    "email" : {"type" : "string"}
+                }
+                "required" : {
+                    "name",
+                    "email"
+                }
+            }
+            "handlers" : {
+                "type": "array",
+                "items" : {
+                    "type": "object"
+                    "properties" : {
+                        "name" : {"type" : "string"},
+                        "email" : {"type" : "string"}
+                    }
+                    "required" : {
+                        "name",
+                        "email"
+                    }
+                }
+            }
+        }
+        "required": [
+        "id",
+        "status",
+        "reportedBy"
+        ]
+    }
+    
+}
 
     

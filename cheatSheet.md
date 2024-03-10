@@ -88,17 +88,12 @@ Best described with an example:
     {
         "title" : "JSON object title",
         "type" : "object",
-        "required" : [
-            "Property1",
-            "Property2",
-            "Property3"
-        ]
         "properties" : {
             "Property1" : {
                 "type": "string",
                 "minLength": 10,
                 "maxLength": 10,
-                "title": "title1"
+                "someThing" : {"enum" : ["value1", "value2"]}
             },
             "Property2" : {
                 "anyOf":[{"type": "string"},{"type": "null"}],
@@ -118,7 +113,16 @@ Best described with an example:
                 },
             }
         }
+        "required" : [
+            "Property1",
+            "Property2",
+            "Property3"
+        ]
     }  
+
+"type" can be "string", "number", "integer", "boolean", "object", "array", "null" <br>
+
+{"$ref":"#/definitions/person"} is a reference to another object defined under "defintions in the JSON file<br>
 
 ### Functional dependencies and Normal forms
 Alternative sometimes complementary (to ER-diagram) way to derive a schema from a domain description. <br>
