@@ -111,6 +111,7 @@ Best described with an example:
                         },
                     },
                 },
+                "maxItems" : 10
             }
         }
         "required" : [
