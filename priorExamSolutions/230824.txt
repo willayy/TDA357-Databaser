@@ -114,7 +114,7 @@ JOIN ActiveLoans ON director = client
 WHERE type = 'org' AND (amount >= value * 3)
 ORDER BY org_nr DESC;
 
-τ-org_nr(δ(π org_nr, name (σ type = 'org'∧ amount > value * 3(Organisations ⨝ director = client ActiveLoans))))
+τ- org_nr(δ(π org_nr, name (σ type = 'org'∧ amount > value * 3(Organisations ⨝ director = client ActiveLoans))))
 
 2.b
 
@@ -125,3 +125,101 @@ HAVING SUM(amount) > 10000000
 ORDER BY total
 
 τ total(δ total > 10000000(γ personal_nr, name, SUM(amount)→total (Persons ⨝ personal_nr = client Persons)))
+
+3.a
+
+I would create an AFFTER UPDATE trigger on the table Organisations that changes the
+client in active loans after the Organisations director has been updated. The trigger
+would use a function that checks if NEW.director isnt the same as OLD.director
+CREATE FUNCTION <name>() RETURNS TRIGGER AS $<name>$
+
+3.b
+
+CREATE VIEW MonthlyPayments AS (
+    SELECT id, email, ((amount * interest)/12) AS monthlyPay
+    FROM ActiveLoans
+    JOIN Persons ON client = personal_nr
+    WHERE amount <= 10000000
+        UNION 
+    SELECT client, ((amount * (interest-0.05))/12) AS monthlyPay
+    FROM ActiveLoans
+    JOIN Persons ON client = personal_nr
+    WHERE amount > 10000000 AND type = 'org'
+)
+
+3.c 
+
+We can add a table with IS A relationship to persons, so if we add
+the table
+
+CREATE TABLE Directors (
+    director_nr TEXT PRIMARY KEY
+    FOREIGN KEY director_nr REFERENCES Persons.personal_nr
+)
+
+Then make Organisations reference Directors.directorPnr as a 
+foreign key instead of referenceing Persons.personal_nr
+
+You can also make a FUNCTION RETURNS TRIGGER that checks if the 
+person being entered as a loan taker is the director of a company
+And add the trigger BEFORE INSERT
+
+4.
+Check jpg with same name as this document
+
+5.a
+
+R(attachment, blocked_user, channel_id, channel_name,
+  message_id, reacting_user, reaction, text, time, timeout,
+  user)
+
+FDs
+
+1. user, message_id -> channel_id, channel_name, text, time
+2. channel_id -> channel_name
+3. channel_name -> channel_id
+4. user, blocked_user -> timeout
+
+We decompose R with the fd 1
+R1(user, message_id, channel_id, channel_name, text, time)
+R2(user, message_id, reacting_user, reaction, timeout, blocked_user)
+
+We decompose R1 with fd 2
+R11(user, message_id, channel_id, time, text)
+R12(channel_id, channel_name)
+
+We decompose R2 with fd 4
+R21(user, message_id, reacting_user, reacting_user, blocked_user)
+R22(user, blocked_user, timeout)
+
+Finishing decompositions
+
+R11(-user-, -message_id-, channel_id, time, text)
+    channel_id->R12.channel_id
+
+R12(-channel_id-, channel_name)
+
+R21(-user-, -message_id-, reacting_user, reacting_user, blocked_user)
+    (user, message_id)->R11.(user, message_id)
+    (user, blocked_user)->R22.(user, blocked_user)
+
+R22(user, blocked_user, timeout)
+
+5.b
+
+MVDs
+
+1. user, message_id ->> attachment
+2. user, message_id ->> reaction, reacting_user
+
+Breakdown R21 with MVD 1
+
+R211(-user-,-message_id-, attachment)
+
+R212(-user-,-message_id-, reaction, reacting_user)
+
+6.a
+
+
+
+    

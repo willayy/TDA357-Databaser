@@ -7,6 +7,7 @@
     SELECT A,B,C WHERE <expression> AND <expression> AND
 
     CREATE FUNCTION <name>() RETURNS TRIGGER AS $<name>$
+        DECLARE <variable> INTEGER;
         BEGIN
             <sql>
             RETURN <NEW/OLD>
@@ -15,6 +16,10 @@
 
     CREATE TRIGGER <name> INSTEAD OF <INSERT/DELETE/UPDATE> ON <TABLE/VIEW>
         FOR EACH ROW EXECUTION function <name>()
+
+    BEFORE - the trigger is fired before the operation
+    AFTER - the trigger is fired after the operation
+    INSTEAD OF - the trigger is fired instead of the operation
 
     CASE
         WHEN EXISTS (
@@ -117,6 +122,8 @@ Best described with an example:
 
 ### Functional dependencies and Normal forms
 Alternative sometimes complementary (to ER-diagram) way to derive a schema from a domain description. <br>
+
+
 
 #### Definition
 
