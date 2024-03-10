@@ -220,11 +220,23 @@ R212(-user-,-message_id-, reaction, reacting_user)
 
 6.a
 
-{
+{   
+    "definitions" : {
+        "person" : {
+            "type": "object"
+            "properties" : {
+                "name" : {"type" : "string"},
+                "email" : {"type" : "string"}
+            },
+            "required" : {
+                "name",
+                "email"
+            }
+        }
+    },
     "type": "array",
-    "items" :
-    {
-        "type" : "object
+    "items" : {
+        "type" : "object,
         "properties" {
             "id" : {
                 "type" : "integer"
@@ -234,38 +246,34 @@ R212(-user-,-message_id-, reaction, reacting_user)
                 "status" : {"enum" : ["reported", "active", "resolved"] }
             },
             "reportedBy" : {
-                "type": "object"
-                "properties" : {
-                    "name" : {"type" : "string"},
-                    "email" : {"type" : "string"}
-                }
-                "required" : {
-                    "name",
-                    "email"
-                }
-            }
+                "$ref":"#/definitions/person"
+            },
             "handlers" : {
-                "type": "array",
+                "type" : "array",
                 "items" : {
-                    "type": "object"
+                    "$ref":"#/definitions/person"
+                },
+                "maxItems": 2
+            },
+            "log" : {
+                "type" : "array",
+                "items" : {
+                    "type" : "object"
                     "properties" : {
-                        "name" : {"type" : "string"},
-                        "email" : {"type" : "string"}
-                    }
-                    "required" : {
-                        "name",
-                        "email"
+                        "text" : {"type" : "string"},
+                        "mentions" : {
+                            "type" : "array",
+                            "items" : {"$ref":"#/definitions/person"}
+                        },
+                        "required": ["text]
                     }
                 }
             }
         }
-        "required": [
-        "id",
-        "status",
-        "reportedBy"
-        ]
+        "required" : ["id","status","reportedBy"]
     }
-    
 }
+
+6.b
 
     
