@@ -54,39 +54,37 @@
         SELECT name, SUM(salary) FROM employee GROUP BY name HAVING SUM(salary) > 10000;
 
 ### ER diagram syntax
-* #### Many-to-many relationships:
-    "Students are registered to many courses" <br>
+
+-Many-to-many relationships- <br>
+"Students are registered to many courses"
     entity -- relationship -- entity
 
-* #### Many-to-exactly-one relationships:
-    "Students are part of exactly on program" <br>
+-Many-to-exactly-one relationships-
+"Students are part of exactly on program"
     entity -- relationship --) entity
 
-* #### Many-to-at-most-one relationships:
-    "A student can be part of a student branch" <br>
-    entity -- relationship --> entity <br>
+-Many-to-at-most-one relationships-
+"A student can be part of a student branch"
+    entity -- relationship --> entity
     can be made with ER-approach or Null-approach.
 
-* #### Multiway relationships:
-    "A course can have lectures with many roles and exactly one teacher per role" <br>
+-Multiway relationships-
+"A course can have lectures with many roles and exactly one teacher per role" <br>
 
-* #### Self-relationships:
-    "Courses have other courses as prerequisites"
+-Self-relationships-
+"Courses have other courses as prerequisites"
 
-* #### Weak entities:
-    "A student branch can be identified by which program it belongs to" <br>
+-Weak entities-
+"A student branch can be identified by which program it belongs to" <br>
     A entity which cant be identified with its own attributes is considered a weak entity.
 
-* #### ISA relationships:
-    "A course with limited positons ISA course" <br>
+-ISA relationships-
+"A course with limited positons ISA course" <br>
     Additional attribute relevant to ISA relationship is stored in another entity.
 
-
-### JSON syntax
-Best described with an example:
-
+### JSON
     {
-        "title" : "JSON object title",
+        "title" : "TopLevelName",
         "type" : "object",
         "properties" : {
             "Property1" : {
@@ -108,7 +106,7 @@ Best described with an example:
                         },
                         "Property3.2" : {
                             "type" : "string",
-                        },
+                        }
                     },
                 },
                 "maxItems" : 10
@@ -119,39 +117,62 @@ Best described with an example:
             "Property2",
             "Property3"
         ]
-    }  
+    }
 
+-Valid JSON object-
+    {
+        "Property1": "value1",
+        "Property2": null,
+        "Property3": [
+            {"Property3.1": "hello", "Property3.2": "world"},
+            {"Property3.1": "foo", "Property3.2": "bar"}
+        ]
+    }
+
+-JSONPath-
+"$.Property3.[?(@.Property3.1 == 'Hello')]" <br>
+Searches for all property3.1 that are "Hello" <br>
+
+"$.Property3[*].Property3.1" <br>
+Searches for all property3.1 <br>
+
+"$[?(@.SomeProperty == 'SomeValue')].someOtherProperty" <br>
+Iterates through objects in array and finds the property someOtherProperty where SomeProperty is "someValue"<br>
+
+-Types-
 "type" can be "string", "number", "integer", "boolean", "object", "array", "null" <br>
 
-{"$ref":"#/definitions/person"} is a reference to another object defined under "defintions in the JSON file<br>
+-Definitions-
+{"$ref":"#/definitions/person"} is a reference to another object called person defined under "defintions" in the JSON file<br>
 
 ### Functional dependencies and Normal forms
 Alternative sometimes complementary (to ER-diagram) way to derive a schema from a domain description. <br>
 
+-Functional dependencies-
+X->A is a functional dependency iff for all attributes in a relation the elements in X uniquely determines the elements in A. <br>
+a->b, a->c, same as a->b,c <br>
+a->b, b->c, same as a->b,c <br>
+a->b, b->c, c,d->e, = a,d->c,d,a = a,d->e (by transitivity and augmentation) <br>
+a->a is a trivial functional dependency <br>
+A functional dependency is in BCNF if the X is a superkey for the relation and its non trivial<br>
 
+-Multivalued dependencies- <br>
+A functional dependency is a multivalued dependency if the elements in X cant unqiuely determine the elements in A without being a trivial dependency. <br>
+for example: course ->> teacher (a course can have many teachers) <br>
 
-#### Definition
-
-#### BCNF
-
-##### Multivalued dependencies
+-Normalisation BCNF- <br>
+Start with all attributes in on relation and use the found functional dependencies to break the relation into smaller relations. You stop when each relation has a functional dependency that is a superkey. When you break down a relation you leave the left side attributes in the relation and remove the right side attributes <br>
 
 ### Relational algebra syntax
 'table' selects everything from the table <br>
 π means select specific columns from a table <br>
-(σ col1 = 'any' ('table')) is a condition <br>
-
-π col1, col2 (σ col1 = 'any'(table)) <br>
-is equal to select col1, col2 from table where col1 = 'any' <br>
+(σ col1 = 'any' ('table')) is a conditional select <br>
 
 → is a AS for columns<br>
 ρ is a AS for tables<br>
 
 τ col1 means sort by col1 <br>
 τ- col1 means sort by col1 in descending order <br>
-
-τ col1 (π col1, col2 'table') <br>
-is equal to select col1, col2 from table order by col1 <br>
 
 δ is a distinct operator <br>
 δ (π col1 'table') <br>
@@ -165,4 +186,16 @@ is equal to select col1, col2 from table order by col1 <br>
 δ(S - R) is equal to S except R <br>
 
 γ is used with aggregate functions and group by <br>
-γ col1, SUM(col2) 'table' <br>
+
+#### Relational algebra examples
+    γ col1, SUM(col2) 'table' <br>
+Select col1 and sum col2 group by col1 <br>
+
+    π col1, col2 (σ col1 = 'any'(table)) <br>
+Select col1, col2 from table where col1 = 'any' <br>
+
+    τ col1 (π col1, col2 'table') <br>
+Select col1, col2 from table order by col1 <br>
+
+    τ col11 (σ sum > 0 (γ col11, SUM(col12)→sum (table1 ⨝ col11 = col21 table2)))
+Select col11, SUM(col12) as sum from table1 join table2 where sum > 0 group by col11 order by ascending col11 <br>

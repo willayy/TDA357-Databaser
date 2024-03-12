@@ -169,111 +169,124 @@ Check jpg with same name as this document
 
 5.a
 
-R(attachment, blocked_user, channel_id, channel_name,
-  message_id, reacting_user, reaction, text, time, timeout,
-  user)
+    R(attachment, blocked_user, channel_id, channel_name,
+    message_id, reacting_user, reaction, text, time, timeout,
+    user)
 
-FDs
+    FDs
 
-1. user, message_id -> channel_id, channel_name, text, time
-2. channel_id -> channel_name
-3. channel_name -> channel_id
-4. user, blocked_user -> timeout
+    1. user, message_id -> channel_id, channel_name, text, time
+    2. channel_id -> channel_name
+    3. channel_name -> channel_id
+    4. user, blocked_user -> timeout
 
-We decompose R with the fd 1
-R1(user, message_id, channel_id, channel_name, text, time)
-R2(user, message_id, reacting_user, reaction, timeout, blocked_user)
+    We decompose R with the fd 1
+    R1(user, message_id, channel_id, channel_name, text, time)
+    R2(user, message_id, reacting_user, reaction, timeout, blocked_user)
 
-We decompose R1 with fd 2
-R11(user, message_id, channel_id, time, text)
-R12(channel_id, channel_name)
+    We decompose R1 with fd 2
+    R11(user, message_id, channel_id, time, text)
+    R12(channel_id, channel_name)
 
-We decompose R2 with fd 4
-R21(user, message_id, reacting_user, reacting_user, blocked_user)
-R22(user, blocked_user, timeout)
+    We decompose R2 with fd 4
+    R21(user, message_id, reacting_user, reacting_user, blocked_user)
+    R22(user, blocked_user, timeout)
 
-Finishing decompositions
+    Finishing decompositions
 
-R11(-user-, -message_id-, channel_id, time, text)
-    channel_id->R12.channel_id
+    R11(-user-, -message_id-, channel_id, time, text)
+        channel_id->R12.channel_id
 
-R12(-channel_id-, channel_name)
+    R12(-channel_id-, channel_name)
 
-R21(-user-, -message_id-, reacting_user, reacting_user, blocked_user)
-    (user, message_id)->R11.(user, message_id)
-    (user, blocked_user)->R22.(user, blocked_user)
+    R21(-user-, -message_id-, reacting_user, reacting_user, blocked_user)
+        (user, message_id)->R11.(user, message_id)
+        (user, blocked_user)->R22.(user, blocked_user)
 
-R22(user, blocked_user, timeout)
+    R22(user, blocked_user, timeout)
 
 5.b
 
-MVDs
+    MVDs
 
-1. user, message_id ->> attachment
-2. user, message_id ->> reaction, reacting_user
+    1. user, message_id ->> attachment
+    2. user, message_id ->> reaction, reacting_user
 
-Breakdown R21 with MVD 1
+    Breakdown R21 with MVD 1
 
-R211(-user-,-message_id-, attachment)
+    R211(-user-,-message_id-, attachment)
 
-R212(-user-,-message_id-, reaction, reacting_user)
+    R212(-user-,-message_id-, reaction, reacting_user)
 
 6.a
-
-{   
-    "definitions" : {
-        "person" : {
-            "type": "object"
-            "properties" : {
-                "name" : {"type" : "string"},
-                "email" : {"type" : "string"}
-            },
-            "required" : {
-                "name",
-                "email"
+    {   
+        "definitions" : {
+            "person" : {
+                "type": "object"
+                "properties" : {
+                    "name" : {"type" : "string"},
+                    "email" : {"type" : "string"}
+                },
+                "required" : {
+                    "name",
+                    "email"
+                }
             }
-        }
-    },
-    "type": "array",
-    "items" : {
-        "type" : "object,
-        "properties" {
-            "id" : {
-                "type" : "integer"
-            },
-            "status" : {
-                "type" : "string",
-                "status" : {"enum" : ["reported", "active", "resolved"] }
-            },
-            "reportedBy" : {
-                "$ref":"#/definitions/person"
-            },
-            "handlers" : {
-                "type" : "array",
-                "items" : {
+        },
+        "type": "array",
+        "items" : {
+            "type" : "object,
+            "properties" {
+                "id" : {
+                    "type" : "integer"
+                },
+                "status" : {
+                    "type" : "string",
+                    "status" : {"enum" : ["reported", "active", "resolved"]}
+                },
+                "reportedBy" : {
                     "$ref":"#/definitions/person"
                 },
-                "maxItems": 2
-            },
-            "log" : {
-                "type" : "array",
-                "items" : {
-                    "type" : "object"
-                    "properties" : {
-                        "text" : {"type" : "string"},
-                        "mentions" : {
-                            "type" : "array",
-                            "items" : {"$ref":"#/definitions/person"}
-                        },
-                        "required": ["text]
+                "handlers" : {
+                    "type" : "array",
+                    "items" : {
+                        "$ref":"#/definitions/person"
+                    },
+                    "maxItems": 2
+                    "minItems": 1
+                },
+                "log" : {
+                    "type" : "array",
+                    "items" : {
+                        "type" : "object"
+                        "properties" : {
+                            "text" : {"type" : "string"},
+                            "mentions" : {
+                                "type" : "array",
+                                "items" : {"$ref":"#/definitions/person"}
+                            },
+                            "required": ["text]
+                        }
                     }
                 }
             }
+            "required" : ["id","status","reportedBy"]
         }
-        "required" : ["id","status","reportedBy"]
     }
-}
 
 6.b
+    You could omit "handlers" from "required", dont know if JSON
+    conventionally supports conditonal "required" but that could defintley
+    be added easily if you do schema validation in python for example.
 
+    Second point is also based on "handlers" being omitted from "required" but
+    also adding "minItems": 1 to the "handlers" property. So combined with first
+    point "handlers" should only be present if its "active" or "resolved" and if it
+    exists it should have at least 1 max 2 handlers.
+
+    Add optional property "resolvedAt" : { "type":"string"}, this string would have to
+    be validated against some standard date format.
+
+6.c
+    "$[?(@.status == "resolved" && @.handlers[0] == "Bob")].id"
     
