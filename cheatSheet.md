@@ -42,6 +42,12 @@
         <query>
     )
 
+    CREATE TABLE <name> (
+        <column> <type> <constraint>,
+    )
+
+    INSERT INTO <table> (<column>) VALUES (<value>)
+
     SELECT DISTINCT <column> FROM <table>
 
     BEGIN;
@@ -54,6 +60,9 @@
         SELECT name, SUM(salary) FROM employee GROUP BY name HAVING SUM(salary) > 10000;
 
 ### ER diagram syntax
+
+Primary key is underlined witha filled line <br>
+Secondary key is underlined with a dashed line <br>
 
 -Many-to-many relationships- <br>
 "Students are registered to many courses"
