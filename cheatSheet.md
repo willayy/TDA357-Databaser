@@ -59,32 +59,32 @@
 "Students are registered to many courses"
     entity -- relationship -- entity
 
--Many-to-exactly-one relationships-
+-Many-to-exactly-one relationships- <br>
 "Students are part of exactly on program"
     entity -- relationship --) entity
 
--Many-to-at-most-one relationships-
+-Many-to-at-most-one relationships- <br>
 "A student can be part of a student branch"
     entity -- relationship --> entity
     can be made with ER-approach or Null-approach.
 
--Multiway relationships-
+-Multiway relationships- <br>
 "A course can have lectures with many roles and exactly one teacher per role" <br>
 
--Self-relationships-
+-Self-relationships- <br>
 "Courses have other courses as prerequisites"
 
--Weak entities-
+-Weak entities- <br>
 "A student branch can be identified by which program it belongs to" <br>
     A entity which cant be identified with its own attributes is considered a weak entity.
 
--ISA relationships-
+-ISA relationships- <br>
 "A course with limited positons ISA course" <br>
     Additional attribute relevant to ISA relationship is stored in another entity.
 
 ### JSON
     {
-        "title" : "TopLevelName",
+        "title" : "TopLevelName", // for documentation only
         "type" : "object",
         "properties" : {
             "Property1" : {
@@ -101,10 +101,10 @@
                 "items" : {
                     "type" : "object",
                     "properties" : {
-                        "Property3.1" : {
+                        "Property31" : {
                             "type" : "string",
                         },
-                        "Property3.2" : {
+                        "Property32" : {
                             "type" : "string",
                         }
                     },
@@ -124,31 +124,31 @@
         "Property1": "value1",
         "Property2": null,
         "Property3": [
-            {"Property3.1": "hello", "Property3.2": "world"},
-            {"Property3.1": "foo", "Property3.2": "bar"}
+            {"Property31": "hello", "Property32": "world"},
+            {"Property31": "foo", "Property32": "bar"}
         ]
     }
 
--JSONPath-
-"$.Property3.[?(@.Property3.1 == 'Hello')]" <br>
-Searches for all property3.1 that are "Hello" <br>
+-JSONPath- <br>
+"$.Property3[?(@.Property31 == 'Hello')].Property31" <br>
+Searches for all property31 that are "Hello" <br>
 
-"$.Property3[*].Property3.1" <br>
-Searches for all property3.1 <br>
+"$.Property3[*].Property31" <br>
+Searches for all property31 <br>
 
 "$[?(@.SomeProperty == 'SomeValue')].someOtherProperty" <br>
-Iterates through objects in array and finds the property someOtherProperty where SomeProperty is "someValue"<br>
+Iterates through objects in array and finds the property someOtherProperty where SomeProperty is "someValue" <br>
 
--Types-
-"type" can be "string", "number", "integer", "boolean", "object", "array", "null" <br>
+-Types- <br>
+"type" can be "string", "number", "integer", "boolean","object", "array", "null" <br>
 
--Definitions-
+-Definitions- <br>
 {"$ref":"#/definitions/person"} is a reference to another object called person defined under "defintions" in the JSON file<br>
 
 ### Functional dependencies and Normal forms
 Alternative sometimes complementary (to ER-diagram) way to derive a schema from a domain description. <br>
 
--Functional dependencies-
+-Functional dependencies- <br>
 X->A is a functional dependency iff for all attributes in a relation the elements in X uniquely determines the elements in A. <br>
 a->b, a->c, same as a->b,c <br>
 a->b, b->c, same as a->b,c <br>
@@ -188,13 +188,14 @@ Start with all attributes in on relation and use the found functional dependenci
 γ is used with aggregate functions and group by <br>
 
 #### Relational algebra examples
-    γ col1, SUM(col2) 'table' <br>
+
+    γ col1, SUM(col2) 'table'
 Select col1 and sum col2 group by col1 <br>
 
-    π col1, col2 (σ col1 = 'any'(table)) <br>
+    π col1, col2 (σ col1 = 'any'(table))
 Select col1, col2 from table where col1 = 'any' <br>
 
-    τ col1 (π col1, col2 'table') <br>
+    τ col1 (π col1, col2 'table')
 Select col1, col2 from table order by col1 <br>
 
     τ col11 (σ sum > 0 (γ col11, SUM(col12)→sum (table1 ⨝ col11 = col21 table2)))
