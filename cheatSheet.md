@@ -1,10 +1,12 @@
 ### SQL syntax
+
     JOIN <rows> ON <expression>
     LEFT JOIN <rows> ON <expression>
     RIGHT JOIN <rows> ON <expression>
     <query> UNION <query>
     <query> EXCEPT <query>
     SELECT A,B,C WHERE <expression> AND <expression> AND
+    (can use =, !=, IN as expr)
 
     CREATE FUNCTION <name>() RETURNS TRIGGER AS $<name>$
         DECLARE <variable> INTEGER;
@@ -12,7 +14,7 @@
             <sql>
             RETURN <NEW/OLD>
         END
-    $try_register$ LANGUAGE plpqsql
+    $<name>$ LANGUAGE plpqsql
 
     CREATE TRIGGER <name> INSTEAD OF <INSERT/DELETE/UPDATE> ON <TABLE/VIEW>
         FOR EACH ROW EXECUTION function <name>()
@@ -20,6 +22,15 @@
     BEFORE - the trigger is fired before the operation
     AFTER - the trigger is fired after the operation
     INSTEAD OF - the trigger is fired instead of the operation
+
+    Order of operations SQL
+    FROM
+    WHERE
+    GROUP BY
+    HAVING
+    SELECT 
+    ORDER BY
+
 
     CASE
         WHEN EXISTS (
@@ -30,7 +41,7 @@
             THEN
     END CASE
 
-    If SUM() or COUNT() is used, GROUP BY is required.
+    If SUM() or COUNT() is used, GROUP BY is required. COUNT(*) will count all instance of GROUP BY <column>
 
     COALESCE(<expression>, <expression>)
 
@@ -43,7 +54,12 @@
     )
 
     CREATE TABLE <name> (
-        <column> <type> <constraint>,
+        <column> <type> PRIMARY KEY,
+        <column> <type> UNIQUE,
+        FOREIGN KEY (<column>) REFERENCES <table>(<column>)
+        CHECK (<column> LIKE '______'),
+        CHECK (<column> IN (1,2,3,...)),
+        CHECK (<column> IS NULL OR <column> = "SomeStr")
     )
 
     INSERT INTO <table> (<column>) VALUES (<value>)
@@ -58,6 +74,8 @@
 
     use HAVING instead of WHERE when using aggregate functions. For example:
         SELECT name, SUM(salary) FROM employee GROUP BY name HAVING SUM(salary) > 10000;
+        
+        SELECT name FROM EMPLOYEE GROUP BY name HAVING SUM(salary) > 10000;
 
 ### ER diagram syntax
 
@@ -92,6 +110,7 @@ Secondary key is underlined with a dashed line <br>
     Additional attribute relevant to ISA relationship is stored in another entity.
 
 ### JSON
+
     {
         "title" : "TopLevelName", // for documentation only
         "type" : "object",
@@ -155,6 +174,7 @@ Iterates through objects in array and finds the property someOtherProperty where
 {"$ref":"#/definitions/person"} is a reference to another object called person defined under "defintions" in the JSON file<br>
 
 ### Functional dependencies and Normal forms
+
 Alternative sometimes complementary (to ER-diagram) way to derive a schema from a domain description. <br>
 
 -Functional dependencies- <br>
@@ -173,6 +193,7 @@ for example: course ->> teacher (a course can have many teachers) <br>
 Start with all attributes in on relation and use the found functional dependencies to break the relation into smaller relations. You stop when each relation has a functional dependency that is a superkey. When you break down a relation you leave the left side attributes in the relation and remove the right side attributes <br>
 
 ### Relational algebra syntax
+
 'table' selects everything from the table <br>
 π means select specific columns from a table <br>
 (σ col1 = 'any' ('table')) is a conditional select <br>
@@ -209,3 +230,6 @@ Select col1, col2 from table order by col1 <br>
 
     τ col11 (σ sum > 0 (γ col11, SUM(col12)→sum (table1 ⨝ col11 = col21 table2)))
 Select col11, SUM(col12) as sum from table1 join table2 where sum > 0 group by col11 order by ascending col11 <br>
+
+    τ− nrTables(γ waiter, COUNT(∗)→nrTables, SUM(nrGuests)→total (Sittings))
+Select waiter, nrTables, total, from Sittings <br>
