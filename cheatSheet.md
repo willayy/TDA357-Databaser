@@ -31,7 +31,6 @@
     SELECT 
     ORDER BY
 
-
     CASE
         WHEN EXISTS (
             <sql>
